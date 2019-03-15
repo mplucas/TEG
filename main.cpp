@@ -10,6 +10,7 @@ int main()
 	nodes = readGasp();
 
 	showNodes( nodes );
+    //
 
     return 0;
 }
