@@ -11,7 +11,5 @@ int main()
 
 	showNodes( nodes );
 
-    //
-
     return 0;
 }
