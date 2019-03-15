@@ -35,17 +35,17 @@ class Graph
 
     public:
 
-    list<Nodes> nodes;
+    list<Node> nodes;
 
-    list<Nodes> getNodes(){
+    list<Node> getNodes(){
         return nodes;
     }
 
-    void setNodes( ns ){
+    void setNodes( list<Node> ns ){
         nodes = ns;
     }
 
-}
+};
 
 // Functions
 
