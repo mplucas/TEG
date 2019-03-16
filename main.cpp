@@ -12,7 +12,13 @@ int main()
 
 	showNodes( g.nodes );
 
+    cout << endl;
+
     g.adjacentMatrix();
+
+    cout << endl;
+
+    g.incidentMatrix();
 
     return 0;
 }

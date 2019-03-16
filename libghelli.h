@@ -43,8 +43,12 @@ class Graph
     }
 
     void setNodes( list<Node> ns ){
-        nodes    = ns;
+        
+		int itNode;
+		
+		nodes    = ns;
 		numNodes = ns.size();
+
     }
 
 	// Função para gerar a matriz adjacencia do grafo
@@ -72,9 +76,6 @@ class Graph
 			cout << endl;
 
 		}
-
-		cout << endl;
-
 	}
 
 	// Função para gerar a matriz incidencia do grafo
@@ -84,26 +85,23 @@ class Graph
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
-
-		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			
-			itEdge = itNode->edges.begin();
-			for( i = 1; i <= numNodes; i++ ){
-				
-				if( ( i != *itEdge ) || ( itEdge == itNode->edges.end() ) ){
-					cout << "0 ";
-				}else{
-					cout << "1 ";
-					itEdge++;
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+				for( i = 1; i <= numNodes; i++ ){
+
+					if( ( i == *itEdge ) || ( i == itNode->id ) ){
+						cout << "1 ";
+					}else{
+						cout << "0 ";
+					}
+
 				}
 
+				cout << endl;
+
 			}
-
-			cout << endl;
-
 		}
-
-		cout << endl;
 
 	}
 
@@ -285,8 +283,6 @@ void showList(list <int> g){
     list <int> :: iterator it;
     for(it = g.begin(); it != g.end(); ++it)
         cout << *it << " ";
-    cout << endl;
-	cout << endl;
 
 }
 
