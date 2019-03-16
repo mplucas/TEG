@@ -39,12 +39,16 @@ class Graph
 	int                 numEdges;
 	bool                directed;
     list<Node>          nodes;
-	vector<vector<int>> auxMatrix;
+	vector<vector<int>> adjacentMatrix;
+	vector<vector<int>> incidentMatrix;
 
 	Graph( list<Node> ns, bool d ){
 
 		setNodes( ns );
 		setDirected( d );
+
+		calcAdjacentMatrix();
+		calcIncidentMatrix();
 
 	}
 
@@ -91,89 +95,75 @@ class Graph
 
 	}
 
-	// Função para alterar as medidas da matriz auxiliar e resetar seus valores
-	void resizeMatrix( int lin, int col ){
+	// Função para retornar matriz dimensionada com todos os valores igual a 0
+	vector<vector<int>> resizeMatrix( int lin, int col ){
 
+		vector<vector<int>> auxMatrix;
 		int i;
 
 		auxMatrix.resize( lin );
 		for ( i = 0 ; i < lin ; i++ )
    			auxMatrix[i].assign( col, 0 );
 
-	}
-
-	// Função para printar a matriz auxiliar em tela
-	void printMatrix(){
-
-		int i, j;
-
-		for( i = 0; i < auxMatrix.size(); i++ ){
-			for( j = 0; j < auxMatrix[i].size(); j++){
-				
-				cout << auxMatrix[i][j] << " ";
-
-			}
-
-			cout << endl;
-
-		}
+		return auxMatrix;
 
 	}
 
 	// Função para gerar a matriz adjacencia do grafo
-	void adjacentMatrix(){
+	void calcAdjacentMatrix(){
 
 		int i;
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
 
-		resizeMatrix( numNodes, numNodes );
-		cout << "Matriz Adjacencia:" << endl;
+		adjacentMatrix = resizeMatrix( numNodes, numNodes );
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
 				
-				auxMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
+				adjacentMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
 
 				if( !directed ){
-					auxMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
+					adjacentMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
 				}
 
 			}
 		}
 
-		printMatrix();
-
 	}
 
 	// Função para gerar a matriz incidencia do grafo
-	void incidentMatrix(){
+	void calcIncidentMatrix(){
 
 		int idEdge = 0;
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
 
-		resizeMatrix( numEdges, numNodes );
-		cout << "Matriz Incidencia:" << endl;
+		incidentMatrix = resizeMatrix( numEdges, numNodes );
 			
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
 					
 				if( ( directed ) && ( itNode->id != *itEdge ) ){
-					auxMatrix[ idEdge ][ itNode->id - 1 ]--;
+					incidentMatrix[ idEdge ][ itNode->id - 1 ]--;
 				}else{
-					auxMatrix[ idEdge ][ itNode->id - 1 ]++;
+					incidentMatrix[ idEdge ][ itNode->id - 1 ]++;
 				}
 
-				auxMatrix[ idEdge ][ *itEdge - 1 ]++;
+				incidentMatrix[ idEdge ][ *itEdge - 1 ]++;
 				idEdge++;
 
 			}
 		}
 
-		printMatrix();
+	}
+
+	//Função para calcular os graus de cada nó
+	void calcDegreeNodes(){
+
+
 
 	}
 
@@ -187,7 +177,8 @@ list<int> explodeInt( string s, char delim );
 list<int> explodeGasp( string s );
 list<Node> readFile( string fileName );
 list<Node> readGasp();
-void showNodes(list <Node> g);
+void showNodes( list <Node> g );
+void printMatrix(  vector<vector<int>> auxMatrix  );
 
 // função para ambientes com c++ de versão antiga
 // int stoi( string s ){
@@ -356,5 +347,23 @@ void showList(list <int> g){
     list <int> :: iterator it;
     for(it = g.begin(); it != g.end(); ++it)
         cout << *it << " ";
+
+}
+
+// Função para printar matriz em tela
+void printMatrix( vector<vector<int>> auxMatrix ){
+
+	int i, j;
+
+	for( i = 0; i < auxMatrix.size(); i++ ){
+		for( j = 0; j < auxMatrix[i].size(); j++){
+			
+			cout << auxMatrix[i][j] << " ";
+
+		}
+
+		cout << endl;
+
+	}
 
 }

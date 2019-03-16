@@ -14,12 +14,15 @@ int main()
     cin >> cDirected;
     bDirected = ( toupper( cDirected ) == 'S' );
     g = new Graph( readGasp( "grafo.txt" ), bDirected );
+    
     cout << endl;
 	g->showGraph();
     cout << endl;
-    g->adjacentMatrix();
+	cout << "Matriz Adjacencia:" << endl;
+    printMatrix( g->adjacentMatrix );
     cout << endl;
-    g->incidentMatrix();
+    cout << "Matriz Incidencia:" << endl;
+    printMatrix( g->incidentMatrix );
 
     return 0;
 }
