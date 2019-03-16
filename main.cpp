@@ -2,14 +2,17 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+//compilar: g++ -std=c++11 libghelli.h main.cpp -w
 int main()
 {
 
-    list<Node> nodes;
+    Graph g;
 
-	nodes = readGasp();
+	g.setNodes( readGasp() );
 
-	showNodes( nodes );
+	showNodes( g.nodes );
+
+    g.adjacentMatrix();
 
     return 0;
 }

@@ -36,16 +36,79 @@ class Graph
     public:
 
     list<Node> nodes;
+	int numNodes;
 
     list<Node> getNodes(){
         return nodes;
     }
 
     void setNodes( list<Node> ns ){
-        nodes = ns;
+        nodes    = ns;
+		numNodes = ns.size();
     }
 
+	// Função para gerar a matriz adjacencia do grafo
+	void adjacentMatrix(){
+
+		int i;
+
+		list<Node> :: iterator itNode;
+		list<int>  :: iterator itEdge;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			
+			itEdge = itNode->edges.begin();
+			for( i = 1; i <= numNodes; i++ ){
+				
+				if( ( i != *itEdge ) || ( itEdge == itNode->edges.end() ) ){
+					cout << "0 ";
+				}else{
+					cout << "1 ";
+					itEdge++;
+				}
+
+			}
+
+			cout << endl;
+
+		}
+
+		cout << endl;
+
+	}
+
+	// Função para gerar a matriz incidencia do grafo
+	void incidentMatrix(){
+
+		int i;
+
+		list<Node> :: iterator itNode;
+		list<int>  :: iterator itEdge;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			
+			itEdge = itNode->edges.begin();
+			for( i = 1; i <= numNodes; i++ ){
+				
+				if( ( i != *itEdge ) || ( itEdge == itNode->edges.end() ) ){
+					cout << "0 ";
+				}else{
+					cout << "1 ";
+					itEdge++;
+				}
+
+			}
+
+			cout << endl;
+
+		}
+
+		cout << endl;
+
+	}
+
 };
+
 
 // Functions
 
@@ -223,6 +286,7 @@ void showList(list <int> g){
     for(it = g.begin(); it != g.end(); ++it)
         cout << *it << " ";
     cout << endl;
+	cout << endl;
 
 }
 
