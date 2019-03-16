@@ -36,6 +36,7 @@ class Graph
     public:
 
 	int                 numNodes;
+	int                 numEdges;
     list<Node>          nodes;
 	vector<vector<int>> auxMatrix;
 
@@ -45,10 +46,17 @@ class Graph
 
     void setNodes( list<Node> ns ){
         
-		int itNode;
+		list<Node>  :: iterator itNode;
 		
 		nodes    = ns;
 		numNodes = ns.size();
+		numEdges = 0;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+
+			numEdges += itNode->edges.size();
+
+		}
 
     }
 
@@ -58,7 +66,7 @@ class Graph
 
 		auxMatrix.resize( lin );
 		for ( i = 0 ; i < lin ; i++ )
-   			auxMatrix[i].resize( col );
+   			auxMatrix[i].assign( col, 0 );
 
 	}
 
@@ -91,19 +99,9 @@ class Graph
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			
-			itEdge = itNode->edges.begin();
-			for( i = 1; i <= numNodes; i++ ){
+			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
 				
-				if( ( i != *itEdge ) || ( itEdge == itNode->edges.end() ) ){
-					
-					auxMatrix[ itNode->id - 1 ][ i - 1 ] = 0;
-
-				}else{
-
-					auxMatrix[ itNode->id - 1 ][ i - 1 ] = 1;
-					itEdge++;
-
-				}
+				auxMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
 
 			}
 		}
@@ -115,27 +113,24 @@ class Graph
 	// Função para gerar a matriz incidencia do grafo
 	void incidentMatrix(){
 
-		int i;
+		int idEdge = 0;
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
+
+		resizeMatrix( numEdges, numNodes );
 			
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
-				for( i = 1; i <= numNodes; i++ ){
-
-					if( ( i == *itEdge ) || ( i == itNode->id ) ){
-						cout << "1 ";
-					}else{
-						cout << "0 ";
-					}
-
-				}
-
-				cout << endl;
+					
+				auxMatrix[ idEdge ][ itNode->id - 1 ]++;
+				auxMatrix[ idEdge ][ *itEdge - 1 ]++;
+				idEdge++;
 
 			}
 		}
+
+		printMatrix();
 
 	}
 
