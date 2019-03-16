@@ -313,14 +313,16 @@ list<Node> readFile( string fileName ){
 // }
 
 // ./a.out < grafo.txt
-list<Node> readGasp(){
+list<Node> readGasp( string fileName ){
 
 	string     line;
     list<Node> nodes;
     Node       node;
 	int        lineCount = 1;
+	ifstream   file( fileName );
+	istream&   s = file;
 
-	while( getline( cin, line ) ){
+	while( getline( s, line ) ){
 
 	    node.setEdges( explodeGasp( line ) );
 		node.setId( lineCount++ );
