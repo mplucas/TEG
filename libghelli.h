@@ -76,6 +76,21 @@ class Graph
 		directed = d;
 	}
 
+	//function for printing the elements in a list
+	void showGraph(){
+
+		cout << "Grafo:" << endl;
+
+		for (auto nodeList:nodes){
+
+			cout << nodeList.id << " : ";
+			for (auto node:nodeList.edges) cout << node << " ";
+			cout << endl;
+
+		}
+
+	}
+
 	// Função para alterar as medidas da matriz auxiliar e resetar seus valores
 	void resizeMatrix( int lin, int col ){
 
@@ -114,6 +129,7 @@ class Graph
 		list<int>  :: iterator itEdge;
 
 		resizeMatrix( numNodes, numNodes );
+		cout << "Matriz Adjacencia:" << endl;
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
@@ -140,6 +156,7 @@ class Graph
 		list<int>  :: iterator itEdge;
 
 		resizeMatrix( numEdges, numNodes );
+		cout << "Matriz Incidencia:" << endl;
 			
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
@@ -170,7 +187,6 @@ list<int> explodeInt( string s, char delim );
 list<int> explodeGasp( string s );
 list<Node> readFile( string fileName );
 list<Node> readGasp();
-void showList(list <int> g);
 void showNodes(list <Node> g);
 
 // função para ambientes com c++ de versão antiga
@@ -340,18 +356,5 @@ void showList(list <int> g){
     list <int> :: iterator it;
     for(it = g.begin(); it != g.end(); ++it)
         cout << *it << " ";
-
-}
-
-//function for printing the elements in a list
-void showNodes(list <Node> n){
-
-    for (auto nodeList:n){
-
-        cout << nodeList.id << " : ";
-        for (auto node:nodeList.edges) cout << node << " ";
-        cout << endl;
-
-    }
 
 }

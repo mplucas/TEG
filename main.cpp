@@ -15,7 +15,7 @@ int main()
     bDirected = ( toupper( cDirected ) == 'S' );
     g = new Graph( readGasp( "grafo.txt" ), bDirected );
     cout << endl;
-	showNodes( g->nodes );
+	g->showGraph();
     cout << endl;
     g->adjacentMatrix();
     cout << endl;
