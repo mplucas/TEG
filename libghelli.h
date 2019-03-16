@@ -80,21 +80,6 @@ class Graph
 		directed = d;
 	}
 
-	//function for printing the elements in a list
-	void showGraph(){
-
-		cout << "Grafo:" << endl;
-
-		for (auto nodeList:nodes){
-
-			cout << nodeList.id << " : ";
-			for (auto node:nodeList.edges) cout << node << " ";
-			cout << endl;
-
-		}
-
-	}
-
 	// Função para retornar matriz dimensionada com todos os valores igual a 0
 	vector<vector<int>> resizeMatrix( int lin, int col ){
 
@@ -179,6 +164,7 @@ list<Node> readFile( string fileName );
 list<Node> readGasp();
 void showNodes( list <Node> g );
 void printMatrix(  vector<vector<int>> auxMatrix  );
+void printGraph( Graph g );
 
 // função para ambientes com c++ de versão antiga
 // int stoi( string s ){
@@ -362,6 +348,21 @@ void printMatrix( vector<vector<int>> auxMatrix ){
 
 		}
 
+		cout << endl;
+
+	}
+
+}
+
+// Função para printar o grafo
+void printGraph( Graph g ){
+
+	cout << "Grafo:" << endl;
+
+	for (auto nodeList:g.nodes){
+
+		cout << nodeList.id << " : ";
+		for (auto node:nodeList.edges) cout << node << " ";
 		cout << endl;
 
 	}

@@ -16,7 +16,7 @@ int main()
     g = new Graph( readGasp( "grafo.txt" ), bDirected );
     
     cout << endl;
-	g->showGraph();
+	printGraph( *g );
     cout << endl;
 	cout << "Matriz Adjacencia:" << endl;
     printMatrix( g->adjacentMatrix );
