@@ -37,8 +37,16 @@ class Graph
 
 	int                 numNodes;
 	int                 numEdges;
+	bool                directed;
     list<Node>          nodes;
 	vector<vector<int>> auxMatrix;
+
+	Graph( list<Node> ns, bool d ){
+
+		setNodes( ns );
+		setDirected( d );
+
+	}
 
     list<Node> getNodes(){
         return nodes;
@@ -60,6 +68,15 @@ class Graph
 
     }
 
+	bool getDirected(){
+		return directed;
+	}
+
+	void setDirected( bool d ){
+		directed = d;
+	}
+
+	// Função para alterar as medidas da matriz auxiliar e resetar seus valores
 	void resizeMatrix( int lin, int col ){
 
 		int i;
@@ -70,6 +87,7 @@ class Graph
 
 	}
 
+	// Função para printar a matriz auxiliar em tela
 	void printMatrix(){
 
 		int i, j;
@@ -98,10 +116,13 @@ class Graph
 		resizeMatrix( numNodes, numNodes );
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
-			
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
 				
 				auxMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
+
+				if( !directed ){
+					auxMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
+				}
 
 			}
 		}
@@ -123,7 +144,12 @@ class Graph
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
 					
-				auxMatrix[ idEdge ][ itNode->id - 1 ]++;
+				if( ( directed ) && ( itNode->id != *itEdge ) ){
+					auxMatrix[ idEdge ][ itNode->id - 1 ]--;
+				}else{
+					auxMatrix[ idEdge ][ itNode->id - 1 ]++;
+				}
+
 				auxMatrix[ idEdge ][ *itEdge - 1 ]++;
 				idEdge++;
 

@@ -6,19 +6,19 @@ using namespace std;
 int main()
 {
 
-    Graph g;
+    Graph* g = NULL;
 
-	g.setNodes( readGasp() );
+    g = new Graph( readGasp(), false );
 
-	showNodes( g.nodes );
-
-    cout << endl;
-
-    g.adjacentMatrix();
+	showNodes( g->nodes );
 
     cout << endl;
 
-    g.incidentMatrix();
+    g->adjacentMatrix();
+
+    cout << endl;
+
+    g->incidentMatrix();
 
     return 0;
 }
