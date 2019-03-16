@@ -35,8 +35,9 @@ class Graph
 
     public:
 
-    list<Node> nodes;
-	int numNodes;
+	int                 numNodes;
+    list<Node>          nodes;
+	vector<vector<int>> auxMatrix;
 
     list<Node> getNodes(){
         return nodes;
@@ -51,6 +52,33 @@ class Graph
 
     }
 
+	void resizeMatrix( int lin, int col ){
+
+		int i;
+
+		auxMatrix.resize( lin );
+		for ( i = 0 ; i < lin ; i++ )
+   			auxMatrix[i].resize( col );
+
+	}
+
+	void printMatrix(){
+
+		int i, j;
+
+		for( i = 0; i < auxMatrix.size(); i++ ){
+			for( j = 0; j < auxMatrix[i].size(); j++){
+				
+				cout << auxMatrix[i][j] << " ";
+
+			}
+
+			cout << endl;
+
+		}
+
+	}
+
 	// Função para gerar a matriz adjacencia do grafo
 	void adjacentMatrix(){
 
@@ -59,23 +87,29 @@ class Graph
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
 
+		resizeMatrix( numNodes, numNodes );
+
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			
 			itEdge = itNode->edges.begin();
 			for( i = 1; i <= numNodes; i++ ){
 				
 				if( ( i != *itEdge ) || ( itEdge == itNode->edges.end() ) ){
-					cout << "0 ";
+					
+					auxMatrix[ itNode->id - 1 ][ i - 1 ] = 0;
+
 				}else{
-					cout << "1 ";
+
+					auxMatrix[ itNode->id - 1 ][ i - 1 ] = 1;
 					itEdge++;
+
 				}
 
 			}
-
-			cout << endl;
-
 		}
+
+		printMatrix();
+
 	}
 
 	// Função para gerar a matriz incidencia do grafo
