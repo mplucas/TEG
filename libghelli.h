@@ -9,8 +9,9 @@ class Node
 
 	public:
 
-	int  id;
+	int       id;
 	list<int> edges;
+	int       degree;
 
 	int getId(){
 		return id;
@@ -49,6 +50,7 @@ class Graph
 
 		calcAdjacentMatrix();
 		calcIncidentMatrix();
+		calcDegreeNodes();
 
 	}
 
@@ -148,7 +150,18 @@ class Graph
 	//Função para calcular os graus de cada nó
 	void calcDegreeNodes(){
 
+		int idNode;
+		list<Node> :: iterator itNode;
+		list<int>  :: iterator itEdge;
 
+		idNode = 0;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+
+			itNode->degree = accumulate( adjacentMatrix[ idNode ].begin(), adjacentMatrix[ idNode ].end(), 0 ) ;
+			idNode++;
+			
+		}
 
 	}
 
@@ -165,21 +178,7 @@ list<Node> readGasp();
 void showNodes( list <Node> g );
 void printMatrix(  vector<vector<int>> auxMatrix  );
 void printGraph( Graph g );
-
-// função para ambientes com c++ de versão antiga
-// int stoi( string s ){
-
-//     // object from the class stringstream
-//     stringstream geek(s);
-
-//     // The object has the value 12345 and stream
-//     // it to the integer x
-//     int x = 0;
-//     geek >> x;
-
-//     return x;
-// }
-
+void printNodesDegrees( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -363,6 +362,20 @@ void printGraph( Graph g ){
 
 		cout << nodeList.id << " : ";
 		for (auto node:nodeList.edges) cout << node << " ";
+		cout << endl;
+
+	}
+
+}
+
+// Fução para printar os graus de cada nós
+void printNodesDegrees( Graph g ){
+
+	cout << "Graus dos vertices:" << endl;
+
+    for (auto node:g.nodes){
+
+		cout << node.id << " : " << node.degree;
 		cout << endl;
 
 	}

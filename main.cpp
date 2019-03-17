@@ -23,6 +23,8 @@ int main()
     cout << endl;
     cout << "Matriz Incidencia:" << endl;
     printMatrix( g->incidentMatrix );
+    cout << endl;
+    printNodesDegrees( *g );
 
     return 0;
 }
