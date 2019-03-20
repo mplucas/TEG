@@ -45,6 +45,12 @@ class Graph
 
 	Graph( list<Node> ns, bool d ){
 
+		buildGraph( ns, d );
+
+	}
+
+	void buildGraph( list<Node> ns, bool d ){
+
 		setNodes( ns );
 		setDirected( d );
 
@@ -59,9 +65,9 @@ class Graph
     }
 
     void setNodes( list<Node> ns ){
-        
+
 		list<Node>  :: iterator itNode;
-		
+
 		nodes    = ns;
 		numNodes = ns.size();
 		numEdges = 0;
@@ -108,7 +114,7 @@ class Graph
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
-				
+
 				adjacentMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
 
 				if( !directed ){
@@ -129,10 +135,10 @@ class Graph
 		list<int>  :: iterator itEdge;
 
 		incidentMatrix = resizeMatrix( numEdges, numNodes );
-			
+
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
-					
+
 				if( ( directed ) && ( itNode->id != *itEdge ) ){
 					incidentMatrix[ idEdge ][ itNode->id - 1 ]--;
 				}else{
@@ -159,50 +165,45 @@ class Graph
 
 			itNode->degree = accumulate( adjacentMatrix[ idNode ].begin(), adjacentMatrix[ idNode ].end(), 0 ) ;
 			idNode++;
-			
+
 		}
 
 	}
 
 	//Função para retirar um nõ do grafo
-	void removeNode( int idNode ){
+	void removeNodeById( int idNode ){
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			if( itNode->id == idNode ){
-				numEdges = numEdges - itNode->edges.size();
 				nodes.erase( itNode );
-				numNodes--;
 				break;
 			}
 		}
 
 
-		// subtrai 1 dos indices de vertices maiores que o retirado para que as matrizes nao sejam afetadas 
+		// subtrai 1 dos indices de vertices maiores que o retirado para que as matrizes nao sejam afetadas
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
-			
+
 			if( itNode->id > idNode ){
 				itNode->id = itNode->id - 1;
 			}
 
-			numEdges = numEdges - count( itNode->edges.begin(), itNode->edges.end(), idNode );
 			itNode->edges.remove( idNode );
 
 			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
-				
+
 				if( *itEdge > idNode ){
 					*itEdge = *itEdge - 1;
 				}
-	
+
 			}
 
 		}
 
-		calcAdjacentMatrix();
-		calcIncidentMatrix();
-		calcDegreeNodes();
+		buildGraph( nodes, directed );
 
 	}
 
@@ -383,7 +384,7 @@ void printMatrix( vector<vector<int>> auxMatrix ){
 
 	for( i = 0; i < auxMatrix.size(); i++ ){
 		for( j = 0; j < auxMatrix[i].size(); j++){
-			
+
 			cout << auxMatrix[i][j] << " ";
 
 		}

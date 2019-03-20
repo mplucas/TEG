@@ -14,7 +14,7 @@ int main()
     cin >> cDirected;
     bDirected = ( toupper( cDirected ) == 'S' );
     g = new Graph( readGasp( "grafo.txt" ), bDirected );
-    
+
     cout << endl;
 	printGraph( *g );
     cout << endl;
@@ -26,7 +26,7 @@ int main()
     cout << endl;
     printNodesDegrees( *g );
     cout << endl << "Remove 2" << endl << endl;
-    g->removeNode( 2 );
+    g->removeNodeById( 2 );
     printGraph( *g );
     cout << endl;
 	cout << "Matriz Adjacencia:" << endl;
