@@ -152,7 +152,6 @@ class Graph
 
 		int idNode;
 		list<Node> :: iterator itNode;
-		list<int>  :: iterator itEdge;
 
 		idNode = 0;
 
@@ -162,6 +161,48 @@ class Graph
 			idNode++;
 			
 		}
+
+	}
+
+	//Função para retirar um nõ do grafo
+	void removeNode( int idNode ){
+
+		list<Node> :: iterator itNode;
+		list<int>  :: iterator itEdge;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			if( itNode->id == idNode ){
+				numEdges = numEdges - itNode->edges.size();
+				nodes.erase( itNode );
+				numNodes--;
+				break;
+			}
+		}
+
+
+		// subtrai 1 dos indices de vertices maiores que o retirado para que as matrizes nao sejam afetadas 
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			
+			if( itNode->id > idNode ){
+				itNode->id = itNode->id - 1;
+			}
+
+			numEdges = numEdges - count( itNode->edges.begin(), itNode->edges.end(), idNode );
+			itNode->edges.remove( idNode );
+
+			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+				
+				if( *itEdge > idNode ){
+					*itEdge = *itEdge - 1;
+				}
+	
+			}
+
+		}
+
+		calcAdjacentMatrix();
+		calcIncidentMatrix();
+		calcDegreeNodes();
 
 	}
 

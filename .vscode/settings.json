@@ -15,6 +15,8 @@
         "unordered_set": "cpp",
         "initializer_list": "cpp",
         "valarray": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "bitset": "cpp",
+        "chrono": "cpp"
     }
 }
