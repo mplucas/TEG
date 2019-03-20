@@ -43,6 +43,15 @@ class Graph
 	vector<vector<int>> adjacentMatrix;
 	vector<vector<int>> incidentMatrix;
 
+	Graph(){
+
+		list<Node> nodeList;
+
+		setNodes( nodeList );
+		setDirected( false );
+
+	}
+
 	Graph( list<Node> ns, bool d ){
 
 		buildGraph( ns, d );
@@ -210,6 +219,41 @@ class Graph
 		}
 
 		buildGraph( nodes, directed );
+
+	}
+
+	Graph graphComplement(){
+
+		list<Node> complementNodes;
+		list<int>  :: iterator itEdge;
+		list<Node> :: iterator itNode;
+		Node nodeAux;
+		int idEdge;
+		Graph* complementGraph = NULL;
+
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+
+			nodeAux.id = itNode->id;
+			nodeAux.edges.clear();
+			itEdge = itNode->edges.begin();
+
+			for( idEdge = 1; idEdge <= numNodes; idEdge++ ){
+
+				if( idEdge != *itEdge ){
+					nodeAux.edges.push_back( idEdge );
+				}else{
+					itEdge++;
+				}
+
+			}
+
+			complementNodes.push_back( nodeAux );
+
+		}
+
+		complementGraph = new Graph( complementNodes, directed );
+
+		return *complementGraph;
 
 	}
 
