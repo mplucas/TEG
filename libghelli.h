@@ -175,28 +175,34 @@ class Graph
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
+		bool nodeIsRemoved = false;
 
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			if( itNode->id == idNode ){
 				nodes.erase( itNode );
+				nodeIsRemoved = true;
 				break;
 			}
 		}
 
 
 		// subtrai 1 dos indices de vertices maiores que o retirado para que as matrizes nao sejam afetadas
-		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+		if( nodeIsRemoved ){
 
-			if( itNode->id > idNode ){
-				itNode->id = itNode->id - 1;
-			}
+			for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 
-			itNode->edges.remove( idNode );
+				if( itNode->id > idNode ){
+					itNode->id = itNode->id - 1;
+				}
 
-			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+				itNode->edges.remove( idNode );
 
-				if( *itEdge > idNode ){
-					*itEdge = *itEdge - 1;
+				for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+
+					if( *itEdge > idNode ){
+						*itEdge = *itEdge - 1;
+					}
+
 				}
 
 			}
@@ -221,6 +227,7 @@ void showNodes( list <Node> g );
 void printMatrix(  vector<vector<int>> auxMatrix  );
 void printGraph( Graph g );
 void printNodesDegrees( Graph g );
+void printGraphInfo( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -421,5 +428,22 @@ void printNodesDegrees( Graph g ){
 		cout << endl;
 
 	}
+
+}
+
+// Função para mostrar as principais informacoes do Grafo
+void printGraphInfo( Graph g ){
+
+	cout << endl;
+	printGraph( g );
+	cout << endl;
+	cout << "Matriz Adjacencia:" << endl;
+	printMatrix( g.adjacentMatrix );
+	cout << endl;
+	cout << "Matriz Incidencia:" << endl;
+	printMatrix( g.incidentMatrix );
+	cout << endl;
+	printNodesDegrees( g );
+	cout << endl;
 
 }

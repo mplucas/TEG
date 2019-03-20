@@ -9,33 +9,43 @@ int main()
     Graph* g = NULL;
     char cDirected;
     bool bDirected;
+    int option = -1;
+    int nodeRemoved;
 
     cout << "O grafo eh direcionado? ( 'S' - Sim | 'N' - Não ): ";
     cin >> cDirected;
     bDirected = ( toupper( cDirected ) == 'S' );
     g = new Graph( readGasp( "grafo.txt" ), bDirected );
 
-    cout << endl;
-	printGraph( *g );
-    cout << endl;
-	cout << "Matriz Adjacencia:" << endl;
-    printMatrix( g->adjacentMatrix );
-    cout << endl;
-    cout << "Matriz Incidencia:" << endl;
-    printMatrix( g->incidentMatrix );
-    cout << endl;
-    printNodesDegrees( *g );
-    cout << endl << "Remove 2" << endl << endl;
-    g->removeNodeById( 2 );
-    printGraph( *g );
-    cout << endl;
-	cout << "Matriz Adjacencia:" << endl;
-    printMatrix( g->adjacentMatrix );
-    cout << endl;
-    cout << "Matriz Incidencia:" << endl;
-    printMatrix( g->incidentMatrix );
-    cout << endl;
-    printNodesDegrees( *g );
+    do{
+
+      printGraphInfo( *g );
+
+      cout << endl << "O que voce deseja fazer?" << endl;
+      cout << "0 - sair" << endl << "1 - remover um vertice" << endl;
+      cin >> option;
+
+      switch ( option ) {
+
+        case 0:
+
+          cout << "Programa encerrado";
+          break;
+
+        case 1:
+
+          cout << "Informe o nó a ser retirado: ";
+          cin >> nodeRemoved;
+          g->removeNodeById( nodeRemoved );
+          break;
+
+        default:
+          cout << "Operacao invalida!";
+          break;
+
+      }
+
+    }while( option != 0 );
 
     return 0;
 }
