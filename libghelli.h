@@ -222,6 +222,7 @@ class Graph
 
 	}
 
+	// Funcao que retorna o complemento de um grafo.
 	Graph graphComplement(){
 
 		list<Node> complementNodes;
@@ -330,7 +331,7 @@ list<int> explodeInt( string s, char delim ){
 
 }
 
-
+// Funcao para dividir uma string em uma lista de inteiros, sendo que a string tem seus valores inteiros separados por barra de espaço.
 list<int> explodeGasp( string s ){
 
 	list<int>    result;
