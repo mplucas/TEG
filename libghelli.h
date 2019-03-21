@@ -183,7 +183,7 @@ class Graph
 	bool getNodeById( int idNode, list<Node> :: iterator& itNode ){
 
 		bool foundNode = false;
-		
+
 		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
 			if( itNode->id == idNode ){
 				foundNode = true;
@@ -202,7 +202,7 @@ class Graph
 		list<int>  :: iterator itEdge;
 		bool nodeIsRemoved = false;
 
-		
+
 		if( this->getNodeById( idNode, itNode ) ){
 
 			nodes.erase( itNode );
@@ -289,7 +289,7 @@ void printMatrix(  vector<vector<int>> auxMatrix  );
 void printGraph( Graph g );
 void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
-bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
+bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
 bool check2PartGraph( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
@@ -512,7 +512,7 @@ void printGraphInfo( Graph g ){
 }
 
 //Funcao para pintar nós
-bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor ){
+bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor ){
 
 	list<int> :: iterator itColor;
 	int i;
@@ -525,6 +525,7 @@ bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverse
 
 	// verifica se o vertice ja não está pintado da cor oposta
 	itColor = find( inverseColor.begin(), inverseColor.end(), idNode );
+
 	if ( itColor == inverseColor.end() ){
 
 		currentColor.push_back( idNode );
@@ -532,13 +533,11 @@ bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverse
 		for( i = 0; i < g.numNodes; i++ ){
 
 			if( ( g.adjacentMatrix[idNode][i] != 0 ) && ( idNode != i ) ){
-
-				if( !paintNode( i, g, inverseColor, currentColor ) ){
+				if( !paintNodes( i, g, inverseColor, currentColor ) ){
 					return false;
 				}
-
 			}
-		
+
 		}
 
 	}else
@@ -554,6 +553,42 @@ bool check2PartGraph( Graph g ){
 	list<int> whiteNodes;
 	list<int> blackNodes;
 
-	return paintNode( 0, g, whiteNodes, blackNodes );
+	return paintNodes( 0, g, whiteNodes, blackNodes );
+
+}
+
+void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
+
+	list<Node> :: iterator itNode;
+	list<int>  :: iterator itNotChecked;
+
+	// verifica se o vertice ja foi percorrido
+	itNotChecked = find( notCheckedList.begin(), notCheckedList.end(), idNode );
+	if ( itNotChecked != notCheckedList.end() ){
+
+		notCheckedList.remove( idNode );
+
+	}
+
+	g.getNodeById( idNode, itNode );
+
+	// verifica se vertices conectados ja foram percorridos
+	for ( auto edge:itNode->edges ){
+
+	}
+
+}
+
+bool checkConnectedGraph( Graph g, int& numComponents ){
+
+	list<int> nodeList;
+
+	for (auto node:g.nodes){
+
+		nodeList.push_back( node.id );
+
+	}
+
+	numComponents =
 
 }
