@@ -179,19 +179,35 @@ class Graph
 
 	}
 
-	//Função para retirar um nõ do grafo
+	//Função para retornar um nó do grafo
+	bool getNodeById( int idNode, list<Node> :: iterator& itNode ){
+
+		bool foundNode = false;
+		
+		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+			if( itNode->id == idNode ){
+				foundNode = true;
+				break;
+			}
+		}
+
+		return foundNode;
+
+	}
+
+	//Função para retirar um nó do grafo
 	void removeNodeById( int idNode ){
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
 		bool nodeIsRemoved = false;
 
-		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
-			if( itNode->id == idNode ){
-				nodes.erase( itNode );
-				nodeIsRemoved = true;
-				break;
-			}
+		
+		if( this->getNodeById( idNode, itNode ) ){
+
+			nodes.erase( itNode );
+			nodeIsRemoved = true;
+
 		}
 
 
