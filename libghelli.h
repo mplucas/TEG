@@ -289,6 +289,8 @@ void printMatrix(  vector<vector<int>> auxMatrix  );
 void printGraph( Graph g );
 void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
+bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
+bool check2PartGraph( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -506,5 +508,52 @@ void printGraphInfo( Graph g ){
 	cout << endl;
 	printNodesDegrees( g );
 	cout << endl;
+
+}
+
+//Funcao para pintar nós
+bool paintNode( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor ){
+
+	list<int> :: iterator itColor;
+	int i;
+
+	// verifica se o vertice ja foi pintado da cor atual
+	itColor = find( currentColor.begin(), currentColor.end(), idNode );
+	if ( itColor != currentColor.end() ){
+		return true;
+	}
+
+	// verifica se o vertice ja não está pintado da cor oposta
+	itColor = find( inverseColor.begin(), inverseColor.end(), idNode );
+	if ( itColor == inverseColor.end() ){
+
+		currentColor.push_back( idNode );
+
+		for( i = 0; i < g.numNodes; i++ ){
+
+			if( ( g.adjacentMatrix[idNode][i] != 0 ) && ( idNode != i ) ){
+
+				if( !paintNode( i, g, inverseColor, currentColor ) ){
+					return false;
+				}
+
+			}
+		
+		}
+
+	}else
+		return false;
+
+	return true;
+
+}
+
+// Função para verificar se o grafo é bipartdo ou não
+bool check2PartGraph( Graph g ){
+
+	list<int> whiteNodes;
+	list<int> blackNodes;
+
+	return paintNode( 0, g, whiteNodes, blackNodes );
 
 }
