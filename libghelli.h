@@ -291,6 +291,8 @@ void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
 bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
 bool check2PartGraph( Graph g );
+void checkComponents( int idNode, Graph g, list<int>& notCheckedList );
+bool checkConnectedGraph( Graph g, int& numComponents );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -559,21 +561,29 @@ bool check2PartGraph( Graph g ){
 
 void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
 
-	list<Node> :: iterator itNode;
 	list<int>  :: iterator itNotChecked;
+	bool removedNow = false;
+	int i;
 
-	// verifica se o vertice ja foi percorrido
+	// verifica se o vertice ja foi percorrido, se não foi o remove da lista notCheckedList e acessa outros vertices por suas arestas
 	itNotChecked = find( notCheckedList.begin(), notCheckedList.end(), idNode );
 	if ( itNotChecked != notCheckedList.end() ){
 
 		notCheckedList.remove( idNode );
+		removedNow = true;
 
 	}
 
-	g.getNodeById( idNode, itNode );
+	if( removedNow ){
 
-	// verifica se vertices conectados ja foram percorridos
-	for ( auto edge:itNode->edges ){
+		// verifica se vertices conectados ja foram percorridos
+		for( i = 0; i < g.numNodes; i++ ){
+
+			if( ( g.adjacentMatrix[idNode][i] != 0 ) && ( idNode != i ) ){
+				checkComponents( i, g, notCheckedList );
+			}
+
+		}
 
 	}
 
@@ -582,13 +592,28 @@ void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
 bool checkConnectedGraph( Graph g, int& numComponents ){
 
 	list<int> nodeList;
+	bool connected = false;
+
+	numComponents = 0;
 
 	for (auto node:g.nodes){
 
-		nodeList.push_back( node.id );
+		// id - 1 para que a matriz adjacente seja acessada corretamente 
+		nodeList.push_back( node.id - 1 );
 
 	}
 
-	numComponents =
+	while( !nodeList.empty() ){
+
+		checkComponents( nodeList.front(), g, nodeList );
+		numComponents++;
+
+	}
+
+	if( numComponents == 1 ){
+		connected = true;
+	}
+
+	return connected;
 
 }

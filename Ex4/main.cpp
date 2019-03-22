@@ -7,6 +7,7 @@ int main()
 {
 
   Graph* g = NULL;
+  int numComponents;
 
   cout << "O grafo eh considerado nao direcionado!" << endl;
   g = new Graph( readGasp( "grafo.txt" ), false );
@@ -14,10 +15,10 @@ int main()
   cout << "GRAFO ATUAL------------------------------------------- " << endl;
   printGraph( *g );
   cout << "------------------------------------------------------ " << endl;
-  if( check2PartGraph( *g ) ){
-    cout << "O grafo eh bipartido!";
+  if( checkConnectedGraph( *g, numComponents ) ){
+    cout << "O grafo eh conexo!";
   }else{
-    cout << "O grafo nao eh bipartido!";
+    cout << "O grafo nao eh conexo e possui " << numComponents << " componentes!";
   }
 
   return 0;
