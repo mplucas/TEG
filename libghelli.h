@@ -274,6 +274,21 @@ class Graph
 
 	}
 
+	// Funçao para remover uma aresta do GRAFO
+	void removeEdge( vector<int> edge ){
+
+		list<Node> :: iterator itNode;
+
+		if( this->getNodeById( edge.front(), itNode ) ){
+
+			itNode->edges.remove( edge.back() );
+
+		}
+
+		buildGraph( nodes, directed );
+
+	}
+
 };
 
 
@@ -295,7 +310,7 @@ void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
 bool edgeIsBridge( vector<int> edge, Graph g );
 vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident );
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
@@ -670,7 +685,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 }
 
 // Funcao para escolher a aresta correta para o algoritmo de fleury
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode ){
 
 	int i;
 	vector<int> edge;	/* [0] - vertice de origem
@@ -680,6 +695,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 	list<vector<int>> possibleEdges;
 	vector<int> choosenEdge;
 
+	deleteNode = false;
 	choosenEdge.assign( 4, -1 );
 
 	// levanta as arestas possiveis a serem acessadas
@@ -719,8 +735,15 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 	}
 
 	if( possibleEdges.size() == 1 ){
+
 		choosenEdge = possibleEdges.front();
 		cout << "escolhido unico!" << endl;
+
+		// altera variavel deleteNode, pois sera necessario remover o node de origem do grafo, visto que ficara desconexo do grafo
+		if( choosenEdge[2] == 1 ){
+			deleteNode = true;
+		}
+
 	}else{
 
 		for (auto pEdge:possibleEdges){
@@ -762,6 +785,7 @@ bool checkEulerianGraph( Graph g ){
 	int numComponents;
 	vector<int> edge;
 	int linMatIncident;
+	bool deleteNode;
 
 	// verifica se o grafo é conexo
 	if( !checkConnectedGraph( g, numComponents ) ){
@@ -774,17 +798,21 @@ bool checkEulerianGraph( Graph g ){
 
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
 
-		edge = pickEdgeFleury( currentNode, g, linMatIncident );
+		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode );
 		currentNode = edge.back();
 
 		if( currentNode != -1 ){
 
 			cout << "incMatrix pre remove: " << endl;
 			printMatrix( g.incidentMatrix );
-			g.incidentMatrix.erase( g.incidentMatrix.begin() + linMatIncident );
+			g.removeEdge( edge );
+			if( deleteNode ){
+				g.removeNodeById( edge.front() );
+			}
+			//g.incidentMatrix.erase( g.incidentMatrix.begin() + linMatIncident );
 			// 	PRECISA RETIRAR O VERTICE DESCONEXO DO GRAFO QUANDO SE RETIRA SUAS ARESTAS
-			g.adjacentMatrix[ edge.front() ][ edge.back() ] = 0;
-			g.adjacentMatrix[ edge.back() ][ edge.front() ] = 0;
+			//g.adjacentMatrix[ edge.front() ][ edge.back() ] = 0;
+			//g.adjacentMatrix[ edge.back() ][ edge.front() ] = 0;
 			cout << "incMatrix pos remove: " << endl;
 			printMatrix( g.incidentMatrix );
 			lastNodeId = currentNode;
