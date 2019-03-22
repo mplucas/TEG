@@ -291,8 +291,12 @@ void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
 bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
 bool check2PartGraph( Graph g );
-void checkComponents( int idNode, Graph g, list<int>& notCheckedList );
+void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
+bool edgeIsBridge( int idNode, int idEdge, Graph g );
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident );
+bool checkEulerianGraph( Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -559,7 +563,8 @@ bool check2PartGraph( Graph g ){
 
 }
 
-void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
+// verifica um vertice e retira todos os vertices de seu componente da lista de vertices notCheckedList
+void removeComponent( int idNode, Graph g, list<int>& notCheckedList ){
 
 	list<int>  :: iterator itNotChecked;
 	bool removedNow = false;
@@ -579,8 +584,8 @@ void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
 		// verifica se vertices conectados ja foram percorridos
 		for( i = 0; i < g.numNodes; i++ ){
 
-			if( ( g.adjacentMatrix[idNode][i] != 0 ) && ( idNode != i ) ){
-				checkComponents( i, g, notCheckedList );
+			if( ( g.adjacentMatrix[ idNode ][ i ] != 0 ) && ( idNode != i ) ){
+				removeComponent( i, g, notCheckedList );
 			}
 
 		}
@@ -589,6 +594,7 @@ void checkComponents( int idNode, Graph g, list<int>& notCheckedList ){
 
 }
 
+// verifica se um grafo é conexo, retorna true ou false e o numero de componentes caso não conexo.
 bool checkConnectedGraph( Graph g, int& numComponents ){
 
 	list<int> nodeList;
@@ -605,7 +611,7 @@ bool checkConnectedGraph( Graph g, int& numComponents ){
 
 	while( !nodeList.empty() ){
 
-		checkComponents( nodeList.front(), g, nodeList );
+		removeComponent( nodeList.front(), g, nodeList );
 		numComponents++;
 
 	}
@@ -615,5 +621,147 @@ bool checkConnectedGraph( Graph g, int& numComponents ){
 	}
 
 	return connected;
+
+}
+
+// Funcao para verificar se a aresta é uma ponte
+bool edgeIsBridge( int idNode, int idEdge, Graph g ){
+
+	int numComponents;
+
+	// retira a aresta e testa se fez o grafo ser desconexo
+	g.adjacentMatrix[ idNode ][ idEdge ] = 0;
+	g.adjacentMatrix[ idEdge ][ idNode ] = 0;
+
+	return !checkConnectedGraph( g, numComponents );
+
+}
+
+// recebe uma linha da matriz incidencia e retorna um vetor com o vertice origem na primeira posicao e o vertice destino na segunda posicao
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
+
+	int i;
+	vector<int> edge;
+	
+	for( i = 0; i < incMatrixLine.size(); i++ ){
+
+		if( incMatrixLine[ i ] == 1 ){
+			edge.push_back( i );
+		}else if( incMatrixLine[ i ] == 2 ){
+			edge.push_back( i );
+			edge.push_back( i );
+			break;
+		}
+	
+	}
+
+	return edge;
+
+}
+
+// Funcao para escolher a aresta correta para o algoritmo de fleury
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
+
+	int i;
+	vector<int> edge;	/* [0] - vertice de origem
+						 * [1] - vertice de destino
+						 * [2] - linha da matriz incidencia
+						 * [3] - 0 nao eh ponte, 1 é ponte */
+	list<vector<int>> possibleEdges;
+	vector<int> choosenEdge;
+
+	choosenEdge.assign( 2, -1 );
+
+	// levanta as arestas possiveis a serem acessadas
+	for( i = 0; i < g.incidentMatrix.size(); i++ ){
+
+		cout << "1" << endl;
+
+		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
+		cout << "1.3" << endl;
+		if( edge.front() == currentNode ){
+			
+			edge.push_back( i );
+			
+			if( edgeIsBridge( edge.front(), edge.back(), g ) ){
+				edge.push_back( 1 );
+			}else{
+				edge.push_back( 0 );
+			}
+
+			possibleEdges.push_back( edge );
+
+		}
+
+		cout << "1.1" << endl;
+
+	}
+
+	cout << "1.2" << endl;
+
+	if( possibleEdges.size() == 1 ){
+		choosenEdge = possibleEdges.front();
+	}else{
+
+		for (auto pEdge:possibleEdges){
+
+			cout << "2" << endl;
+
+			if( pEdge.back() == 0 ){
+				choosenEdge = pEdge;
+				break;
+			}
+
+		}
+
+	}
+
+	// retira validacao se é ponte ou nao
+	choosenEdge.pop_back();
+
+	cout << "3" << endl;
+
+	// retira linha da matriz incidencia
+	linMatIncident = choosenEdge.back();
+	choosenEdge.pop_back();
+
+	cout << "4" << endl;
+
+	return choosenEdge;
+
+}
+
+// Funcao que verifica se um grafo é euleriano
+bool checkEulerianGraph( Graph g ){
+
+	int firstNodeId;
+	int currentNode;
+	vector<vector<int>> :: iterator itEdge;
+	int numRemovedEdges = 0;
+	int numComponents;
+	vector<int> edge;
+	int linMatIncident;
+
+	// verifica se o grafo é conexo
+	if( !checkConnectedGraph( g, numComponents ) ){
+		return false;
+	}
+
+	// le e remove a primeira aresta da matriz incidencia, e seta vertice de partida e destino
+	edge = pickEdgeFleury( 0, g, linMatIncident );
+	firstNodeId = edge.front();
+	currentNode = edge.back();
+
+	// le e remove vertices restantes
+	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
+
+		edge = pickEdgeFleury( currentNode, g, linMatIncident );
+		g.incidentMatrix.erase( g.incidentMatrix.begin() + linMatIncident );
+		numRemovedEdges++;
+		currentNode = edge.back();
+
+	}
+
+	return ( ( currentNode == firstNodeId ) && ( numRemovedEdges == g.numEdges ) );
 
 }
