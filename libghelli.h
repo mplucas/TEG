@@ -293,7 +293,7 @@ bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& invers
 bool check2PartGraph( Graph g );
 void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
-bool edgeIsBridge( int idNode, int idEdge, Graph g );
+bool edgeIsBridge( vector<int> edge, Graph g );
 vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
 vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident );
 bool checkEulerianGraph( Graph g );
@@ -625,19 +625,18 @@ bool checkConnectedGraph( Graph g, int& numComponents ){
 }
 
 // Funcao para verificar se a aresta é uma ponte
-bool edgeIsBridge( int idNode, int idEdge, Graph g ){
+bool edgeIsBridge( vector<int> edge, Graph g ){
 
 	int numComponents;
 
-	// retira a aresta e testa se fez o grafo ser desconexo
-	g.adjacentMatrix[ idNode ][ idEdge ] = 0;
-	g.adjacentMatrix[ idEdge ][ idNode ] = 0;
-	cout << "idNode: " << idNode << " idEdge: " << idEdge << endl;
+	cout << "edge: ";
+	for( auto node:edge ){
+		cout << node << " ";
+	}
 
-	cout << " incident:" << endl;
-	printMatrix( g.incidentMatrix );
-	cout << " adjacent:" << endl;
-	printMatrix( g.adjacentMatrix );
+	// retira a aresta e testa se fez o grafo ser desconexo
+	g.adjacentMatrix[ edge.front() ][ edge.back() ] = 0;
+	g.adjacentMatrix[ edge.back() ][ edge.front() ] = 0;
 
 	return !checkConnectedGraph( g, numComponents );
 
@@ -670,13 +669,13 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 
 	int i;
 	vector<int> edge;	/* [0] - vertice de origem
-						 * [1] - vertice de destino
-						 * [2] - linha da matriz incidencia
-						 * [3] - 0 nao eh ponte, 1 é ponte */
+						 * [1] - vertice de linMatIncidentdestino
+						 * [2] - 0 nao eh ponte, 1 é ponte
+						 * [3] - linha da matriz incidencia */
 	list<vector<int>> possibleEdges;
 	vector<int> choosenEdge;
 
-	choosenEdge.assign( 2, -1 );
+	choosenEdge.assign( 4, -1 );
 
 	// levanta as arestas possiveis a serem acessadas
 	for( i = 0; i < g.incidentMatrix.size(); i++ ){
@@ -684,27 +683,30 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
 		if( edge.front() == currentNode ){
 
-			edge.push_back( i );
-
-			if( edgeIsBridge( edge.front(), edge.back(), g ) ){
+			// adiciona validacao referente a aresta ser ponte
+			if( edgeIsBridge( edge, g ) ){
 				edge.push_back( 1 );
 			}else{
 				edge.push_back( 0 );
 			}
 
+			// adiciona linha da matriz incidencia
+			edge.push_back( i );
 			possibleEdges.push_back( edge );
 
 		}else if( edge.back() == currentNode ){
 
 			reverse( edge.begin(), edge.end() );
-			edge.push_back( i );
 
-			if( edgeIsBridge( edge.front(), edge.back(), g ) ){
+			// adiciona validacao referente a aresta ser ponte
+			if( edgeIsBridge( edge, g ) ){
 				edge.push_back( 1 );
 			}else{
 				edge.push_back( 0 );
 			}
 
+			// adiciona linha da matriz incidencia
+			edge.push_back( i );
 			possibleEdges.push_back( edge );
 
 		}
@@ -717,7 +719,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 
 		for (auto pEdge:possibleEdges){
 
-			if( pEdge.back() == 0 ){
+			if( pEdge[2] == 0 ){
 				choosenEdge = pEdge;
 				break;
 			}
@@ -726,11 +728,11 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 
 	}
 
-	// retira validacao se é ponte ou nao
-	choosenEdge.pop_back();
-
 	// retira linha da matriz incidencia
 	linMatIncident = choosenEdge.back();
+	choosenEdge.pop_back();
+
+	// retira validacao se é ponte ou nao
 	choosenEdge.pop_back();
 
 	return choosenEdge;
@@ -753,10 +755,10 @@ bool checkEulerianGraph( Graph g ){
 		return false;
 	}
 
-	// le e remove a primeira aresta da matriz incidencia, e seta vertice de partida e destino
+	// le a primeira aresta da matriz incidencia, e seta vertice de partida e destino
 	edge = pickEdgeFleury( 0, g, linMatIncident );
 	firstNodeId = edge.front();
-	currentNode = edge.back();
+	currentNode = firstNodeId;
 
 	// le e remove vertices restantes
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
