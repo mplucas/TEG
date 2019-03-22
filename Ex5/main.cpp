@@ -6,20 +6,23 @@ using namespace std;
 int main()
 {
 
-  Graph* g = NULL;
-  int numComponents;
+    setbuf( stdout, NULL );
 
-  cout << "O grafo eh considerado nao direcionado!" << endl;
-  g = new Graph( readGasp( "grafo.txt" ), false );
+    Graph* g = NULL;
+    int numComponents;
 
-  cout << "GRAFO ATUAL------------------------------------------- " << endl;
-  printGraph( *g );
-  cout << "------------------------------------------------------ " << endl;
-  if( checkEulerianGraph( *g ) ){
-    cout << "O grafo eh Euleriano!";
-  }else{
-    cout << "O grafo nao eh Euleriano!";
-  }
+    cout << "O grafo eh considerado nao direcionado!" << endl;
+    g = new Graph( readGasp( "grafo.txt" ), false );
 
-  return 0;
+    cout << "GRAFO ATUAL------------------------------------------- " << endl;
+    printGraphInfo( *g );
+    cout << "------------------------------------------------------ " << endl;
+    if( checkEulerianGraph( *g ) ){
+        cout << "O grafo eh Euleriano!";
+    }else{
+        cout << "O grafo nao eh Euleriano!";
+    }
+
+    return 0;
+
 }
