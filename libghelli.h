@@ -538,7 +538,7 @@ bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& invers
 
 		for( i = 0; i < g.numNodes; i++ ){
 
-			if( ( g.adjacentMatrix[idNode][i] != 0 ) && ( idNode != i ) ){
+			if( ( g.adjacentMatrix[ idNode ][ i ] != 0 ) && ( idNode != i ) ){
 				if( !paintNodes( i, g, inverseColor, currentColor ) ){
 					return false;
 				}
@@ -604,7 +604,7 @@ bool checkConnectedGraph( Graph g, int& numComponents ){
 
 	for (auto node:g.nodes){
 
-		// id - 1 para que a matriz adjacente seja acessada corretamente 
+		// id - 1 para que a matriz adjacente seja acessada corretamente
 		nodeList.push_back( node.id - 1 );
 
 	}
@@ -632,6 +632,12 @@ bool edgeIsBridge( int idNode, int idEdge, Graph g ){
 	// retira a aresta e testa se fez o grafo ser desconexo
 	g.adjacentMatrix[ idNode ][ idEdge ] = 0;
 	g.adjacentMatrix[ idEdge ][ idNode ] = 0;
+	cout << "idNode: " << idNode << " idEdge: " << idEdge << endl;
+
+	cout << " incident:" << endl;
+	printMatrix( g.incidentMatrix );
+	cout << " adjacent:" << endl;
+	printMatrix( g.adjacentMatrix );
 
 	return !checkConnectedGraph( g, numComponents );
 
@@ -642,7 +648,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 
 	int i;
 	vector<int> edge;
-	
+
 	for( i = 0; i < incMatrixLine.size(); i++ ){
 
 		if( incMatrixLine[ i ] == 1 ){
@@ -652,7 +658,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 			edge.push_back( i );
 			break;
 		}
-	
+
 	}
 
 	return edge;
@@ -675,14 +681,24 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 	// levanta as arestas possiveis a serem acessadas
 	for( i = 0; i < g.incidentMatrix.size(); i++ ){
 
-		cout << "1" << endl;
-
 		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
-		cout << "1.3" << endl;
 		if( edge.front() == currentNode ){
-			
+
 			edge.push_back( i );
-			
+
+			if( edgeIsBridge( edge.front(), edge.back(), g ) ){
+				edge.push_back( 1 );
+			}else{
+				edge.push_back( 0 );
+			}
+
+			possibleEdges.push_back( edge );
+
+		}else if( edge.back() == currentNode ){
+
+			reverse( edge.begin(), edge.end() );
+			edge.push_back( i );
+
 			if( edgeIsBridge( edge.front(), edge.back(), g ) ){
 				edge.push_back( 1 );
 			}else{
@@ -693,19 +709,13 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 
 		}
 
-		cout << "1.1" << endl;
-
 	}
-
-	cout << "1.2" << endl;
 
 	if( possibleEdges.size() == 1 ){
 		choosenEdge = possibleEdges.front();
 	}else{
 
 		for (auto pEdge:possibleEdges){
-
-			cout << "2" << endl;
 
 			if( pEdge.back() == 0 ){
 				choosenEdge = pEdge;
@@ -719,13 +729,9 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident ){
 	// retira validacao se é ponte ou nao
 	choosenEdge.pop_back();
 
-	cout << "3" << endl;
-
 	// retira linha da matriz incidencia
 	linMatIncident = choosenEdge.back();
 	choosenEdge.pop_back();
-
-	cout << "4" << endl;
 
 	return choosenEdge;
 
