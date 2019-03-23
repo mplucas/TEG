@@ -207,6 +207,7 @@ class Graph
 
 			nodes.erase( itNode );
 			nodeIsRemoved = true;
+			cout << "Removeu " << idNode << endl;
 
 		}
 
@@ -274,17 +275,34 @@ class Graph
 
 	}
 
-	// Funçao para remover uma aresta do GRAFO
+	// Funçao para remover uma aresta do GRAFO.
 	void removeEdge( vector<int> edge ){
 
 		list<Node> :: iterator itNode;
+		list<int>  :: iterator itEdge;
 
-		if( this->getNodeById( edge.front(), itNode ) ){
+		cout << "edge to be removed: ";
+		for( auto node:edge ){
+			cout << node << " ";
+		}
+		cout << endl;
+		
+		this->getNodeById( edge.front(), itNode );
 
+		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
+
+		if ( itEdge != itNode->edges.end() ){
+			cout << "comecou a retirar" << endl;
 			itNode->edges.remove( edge.back() );
+		}else{
+			
+			cout << "comecou a retirar 2" << endl;
+			this->getNodeById( edge.back(), itNode );
+			itNode->edges.remove( edge.front() );
 
 		}
 
+		cout << "retirado de boas" << endl;
 		buildGraph( nodes, directed );
 
 	}
@@ -635,10 +653,6 @@ bool checkConnectedGraph( Graph g, int& numComponents ){
 		connected = true;
 	}
 
-	printMatrix( g.adjacentMatrix );
-
-	cout << "Numero de componentes " << numComponents << endl;
-
 	return connected;
 
 }
@@ -648,15 +662,10 @@ bool edgeIsBridge( vector<int> edge, Graph g ){
 
 	int numComponents;
 
-	cout << "edge: ";
-	for( auto node:edge ){
-		cout << node << " ";
-	}
-	cout << endl;
-
-	// retira a aresta e testa se fez o grafo ser desconexo
-	g.adjacentMatrix[ edge.front() ][ edge.back() ] = 0;
-	g.adjacentMatrix[ edge.back() ][ edge.front() ] = 0;
+	// retira a aresta e testa se fez o grafo ser desconexo.
+	// - 1 para acessar corretamente as posicoes da matriz
+	g.adjacentMatrix[ edge.front() - 1 ][ edge.back() - 1 ] = 0;
+	g.adjacentMatrix[ edge.back() - 1 ][ edge.front() - 1 ] = 0;
 
 	return !checkConnectedGraph( g, numComponents );
 
@@ -671,10 +680,10 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 	for( i = 0; i < incMatrixLine.size(); i++ ){
 
 		if( incMatrixLine[ i ] == 1 ){
-			edge.push_back( i );
+			edge.push_back( i + 1 );
 		}else if( incMatrixLine[ i ] == 2 ){
-			edge.push_back( i );
-			edge.push_back( i );
+			edge.push_back( i + 1 );
+			edge.push_back( i + 1 );
 			break;
 		}
 
@@ -698,10 +707,18 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 	deleteNode = false;
 	choosenEdge.assign( 4, -1 );
 
+	cout << "current node: " << currentNode << endl;
+
 	// levanta as arestas possiveis a serem acessadas
 	for( i = 0; i < g.incidentMatrix.size(); i++ ){
 
 		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
+		cout << "Edge: ";
+		for( auto node:edge ){
+			cout << node << " ";
+		}
+		cout << endl;
+
 		if( edge.front() == currentNode ){
 
 			// adiciona validacao referente a aresta ser ponte
@@ -737,7 +754,6 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 	if( possibleEdges.size() == 1 ){
 
 		choosenEdge = possibleEdges.front();
-		cout << "escolhido unico!" << endl;
 
 		// altera variavel deleteNode, pois sera necessario remover o node de origem do grafo, visto que ficara desconexo do grafo
 		if( choosenEdge[2] == 1 ){
@@ -750,7 +766,6 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 			if( pEdge[2] == 0 ){
 				choosenEdge = pEdge;
-				cout << "escolhido nao ponte!" << endl;
 				break;
 			}
 
@@ -758,11 +773,11 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 	}
 
-	// retira linha da matriz incidencia
+	// retira linha da matriz incidencia de edge
 	linMatIncident = choosenEdge.back();
 	choosenEdge.pop_back();
 
-	// retira validacao se é ponte ou nao
+	// retira validacao se é ponte ou nao de edge
 	choosenEdge.pop_back();
 
 	cout << "choosenEdge: ";
@@ -793,31 +808,42 @@ bool checkEulerianGraph( Graph g ){
 	}
 
 	// le e remove arestas da matriz incidencia
-	firstNodeId = 0;
+	firstNodeId = 1;
 	currentNode = firstNodeId;
+	
+	//int i = 0;
 
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
+	//while( i < 5 ){
 
 		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode );
 		currentNode = edge.back();
 
 		if( currentNode != -1 ){
 
-			cout << "incMatrix pre remove: " << endl;
-			printMatrix( g.incidentMatrix );
+			cout << "grafo pre remove: " << endl;
+			printGraphInfo( g );
 			g.removeEdge( edge );
 			if( deleteNode ){
+
 				g.removeNodeById( edge.front() );
+
+				// rearranjo dos ids dos vertices caso um seja deletado
+				if( currentNode > edge.front() ){
+					currentNode--;
+				}
+
 			}
 			//g.incidentMatrix.erase( g.incidentMatrix.begin() + linMatIncident );
 			// 	PRECISA RETIRAR O VERTICE DESCONEXO DO GRAFO QUANDO SE RETIRA SUAS ARESTAS
 			//g.adjacentMatrix[ edge.front() ][ edge.back() ] = 0;
 			//g.adjacentMatrix[ edge.back() ][ edge.front() ] = 0;
-			cout << "incMatrix pos remove: " << endl;
-			printMatrix( g.incidentMatrix );
+			cout << "grafo pos remove: " << endl;
+			printGraphInfo( g );
 			lastNodeId = currentNode;
 
 		}
+		//i++;
 
 	}
 
