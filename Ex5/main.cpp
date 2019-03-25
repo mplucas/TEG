@@ -10,24 +10,18 @@ int main()
 
     Graph* g = NULL;
     int numComponents;
-    char cDirected;
-    bool bDirected;
 
-    cout << "O grafo eh direcionado? ( 'S' - Sim | 'N' - Não ): ";
-    cin >> cDirected;
-    bDirected = ( toupper( cDirected ) == 'S' );
-    g = new Graph( readGasp( "grafo.txt" ), bDirected );
+    cout << "O grafo eh considerado nao direcionado!" << endl;
+    g = new Graph( readGasp( "grafo.txt" ), false );
 
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
-    printGraph( *g );
+    printGraphInfo( *g );
     cout << "------------------------------------------------------ " << endl;
     if( checkEulerianGraph( *g ) ){
         cout << "O grafo eh Euleriano!";
     }else{
         cout << "O grafo nao eh Euleriano!";
     }
-
-    cout << endl;
 
     return 0;
 

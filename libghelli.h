@@ -279,7 +279,7 @@ class Graph
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
-
+		
 		this->getNodeById( edge.front(), itNode );
 
 		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
@@ -287,7 +287,7 @@ class Graph
 		if ( itEdge != itNode->edges.end() ){
 			itNode->edges.remove( edge.back() );
 		}else{
-
+			
 			this->getNodeById( edge.back(), itNode );
 			itNode->edges.remove( edge.front() );
 
@@ -317,8 +317,8 @@ bool check2PartGraph( Graph g );
 void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
 bool edgeIsBridge( vector<int> edge, Graph g );
-vector<int> readEdgeIncMatrix( vector<int> incMatrixLine, bool directed );
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode, int originCNode );
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
 void printEdge( vector<int> edge );
 
@@ -663,39 +663,19 @@ bool edgeIsBridge( vector<int> edge, Graph g ){
 }
 
 // recebe uma linha da matriz incidencia e retorna um vetor com o vertice origem na primeira posicao e o vertice destino na segunda posicao
-vector<int> readEdgeIncMatrix( vector<int> incMatrixLine, bool directed ){
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 
 	int i;
 	vector<int> edge;
 
-	if( directed ){
+	for( i = 0; i < incMatrixLine.size(); i++ ){
 
-		for( i = 0; i < incMatrixLine.size(); i++ ){
-
-			if( incMatrixLine[ i ] == 1 ){
-				edge.push_back( i + 1 );
-			}else if( incMatrixLine[ i ] == -1 ){
-				edge.insert( edge.begin(), i + 1 );
-			}else if( incMatrixLine[ i ] == 2 ){
-				edge.push_back( i + 1 );
-				edge.push_back( i + 1 );
-				break;
-			}
-
-		}
-
-	}else{
-
-		for( i = 0; i < incMatrixLine.size(); i++ ){
-
-			if( incMatrixLine[ i ] == 1 ){
-				edge.push_back( i + 1 );
-			}else if( incMatrixLine[ i ] == 2 ){
-				edge.push_back( i + 1 );
-				edge.push_back( i + 1 );
-				break;
-			}
-
+		if( incMatrixLine[ i ] == 1 ){
+			edge.push_back( i + 1 );
+		}else if( incMatrixLine[ i ] == 2 ){
+			edge.push_back( i + 1 );
+			edge.push_back( i + 1 );
+			break;
 		}
 
 	}
@@ -705,7 +685,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine, bool directed ){
 }
 
 // Funcao para escolher a aresta correta para o algoritmo de fleury
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode, int originCNode ){
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode ){
 
 	int i;
 	vector<int> edge;	/* [0] - vertice de origem
@@ -724,7 +704,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 	// levanta as arestas possiveis a serem acessadas
 	for( i = 0; i < g.incidentMatrix.size(); i++ ){
 
-		edge = readEdgeIncMatrix( g.incidentMatrix[ i ], g.directed );
+		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
 
 		if( edge.front() == currentNode ){
 
@@ -773,8 +753,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 			if( pEdge[2] == 0 ){
 				choosenEdge = pEdge;
-				if( pEdge[1] == originCNode )
-					break;
+				break;
 			}
 
 		}
@@ -803,7 +782,6 @@ bool checkEulerianGraph( Graph g ){
 	vector<int> edge;
 	int linMatIncident;
 	bool deleteNode;
-	int originCNode;
 
 	// verifica se o grafo é conexo
 	if( !checkConnectedGraph( g, numComponents ) ){
@@ -813,25 +791,20 @@ bool checkEulerianGraph( Graph g ){
 
 	// le e remove arestas da matriz incidencia
 	firstNodeId = 1;
-	originCNode = -1;
 	currentNode = firstNodeId;
-
+	
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
 
-		cout << "Vertice atual: " << currentNode <<endl;
-		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode, originCNode );
-		originCNode = edge.front();
+		cout << "Vertice atual: " << currentNode << endl;
+		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode );
 		currentNode = edge.back();
 
 		if( currentNode != -1 ){
 
 			g.removeEdge( edge );
-
 			cout << "Aresta escolhida e removida: ";
 			printEdge( edge );
-
 			lastNodeId = currentNode;
-
 			//	verifica se a aresta removida nao e um laco
 			if( ( deleteNode ) && ( currentNode != firstNodeId ) ){
 
@@ -839,11 +812,11 @@ bool checkEulerianGraph( Graph g ){
 				cout << "Vertice " << edge.front() << " removido pois ficou desconexo.";
 
                 if( edge.front() == firstNodeId ){
-					cout << endl << "Vertice inicial desconexo, logo nao ha como retornar a ele." << endl;
+					cout << endl << "Vertice inicial desconexo, logo nao ha como retornar a ele." << endl << endl;
 					break;
 				}
 
-				cout << " Rearranjado ids do grafo." << endl << endl;
+				cout << " Rearranjado ids do grafo." << endl;
 
 				// rearranjo dos ids dos vertices caso um seja deletado
 				if( currentNode > edge.front() ){
@@ -852,7 +825,11 @@ bool checkEulerianGraph( Graph g ){
 
 			}
 
+			cout << endl;
+
 		}
+
+		// Para visualizar melhor a mudanca no grafo
 		printGraph( g );
 		cout << endl;
 
