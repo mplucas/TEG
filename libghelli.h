@@ -308,7 +308,7 @@ list<int> explodeGasp( string s );
 list<Node> readFile( string fileName );
 list<Node> readGasp();
 void showNodes( list <Node> g );
-void printMatrix(  vector<vector<int>> auxMatrix  );
+void printMatrix( vector<vector<int>> auxMatrix );
 void printGraph( Graph g );
 void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
@@ -317,8 +317,8 @@ bool check2PartGraph( Graph g );
 void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
 bool edgeIsBridge( vector<int> edge, Graph g );
-vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine, bool directed );
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode, int originCNode );
 bool checkEulerianGraph( Graph g );
 void printEdge( vector<int> edge );
 
@@ -663,19 +663,39 @@ bool edgeIsBridge( vector<int> edge, Graph g ){
 }
 
 // recebe uma linha da matriz incidencia e retorna um vetor com o vertice origem na primeira posicao e o vertice destino na segunda posicao
-vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
+vector<int> readEdgeIncMatrix( vector<int> incMatrixLine, bool directed ){
 
 	int i;
 	vector<int> edge;
 
-	for( i = 0; i < incMatrixLine.size(); i++ ){
+	if( directed ){
 
-		if( incMatrixLine[ i ] == 1 ){
-			edge.push_back( i + 1 );
-		}else if( incMatrixLine[ i ] == 2 ){
-			edge.push_back( i + 1 );
-			edge.push_back( i + 1 );
-			break;
+		for( i = 0; i < incMatrixLine.size(); i++ ){
+
+			if( incMatrixLine[ i ] == 1 ){
+				edge.push_back( i + 1 );
+			}else if( incMatrixLine[ i ] == -1 ){
+				edge.insert( edge.begin(), i + 1 );
+			}else if( incMatrixLine[ i ] == 2 ){
+				edge.push_back( i + 1 );
+				edge.push_back( i + 1 );
+				break;
+			}
+
+		}
+
+	}else{
+
+		for( i = 0; i < incMatrixLine.size(); i++ ){
+
+			if( incMatrixLine[ i ] == 1 ){
+				edge.push_back( i + 1 );
+			}else if( incMatrixLine[ i ] == 2 ){
+				edge.push_back( i + 1 );
+				edge.push_back( i + 1 );
+				break;
+			}
+
 		}
 
 	}
@@ -685,7 +705,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 }
 
 // Funcao para escolher a aresta correta para o algoritmo de fleury
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode ){
+vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode, int originCNode ){
 
 	int i;
 	vector<int> edge;	/* [0] - vertice de origem
@@ -704,7 +724,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 	// levanta as arestas possiveis a serem acessadas
 	for( i = 0; i < g.incidentMatrix.size(); i++ ){
 
-		edge = readEdgeIncMatrix( g.incidentMatrix[ i ] );
+		edge = readEdgeIncMatrix( g.incidentMatrix[ i ], g.directed );
 
 		if( edge.front() == currentNode ){
 
@@ -749,11 +769,12 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 	}else{
 
-		for (auto pEdge:possibleEdges){
+		for ( auto pEdge:possibleEdges ){
 
 			if( pEdge[2] == 0 ){
 				choosenEdge = pEdge;
-				break;
+				if( pEdge[1] == originCNode )
+					break;
 			}
 
 		}
@@ -782,6 +803,7 @@ bool checkEulerianGraph( Graph g ){
 	vector<int> edge;
 	int linMatIncident;
 	bool deleteNode;
+	int originCNode;
 
 	// verifica se o grafo é conexo
 	if( !checkConnectedGraph( g, numComponents ) ){
@@ -791,13 +813,14 @@ bool checkEulerianGraph( Graph g ){
 
 	// le e remove arestas da matriz incidencia
 	firstNodeId = 1;
+	originCNode = -1;
 	currentNode = firstNodeId;
 
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
 
 		cout << "Vertice atual: " << currentNode <<endl;
-
-		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode );
+		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode, originCNode );
+		originCNode = edge.front();
 		currentNode = edge.back();
 
 		if( currentNode != -1 ){
