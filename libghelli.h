@@ -279,7 +279,7 @@ class Graph
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
-		
+
 		this->getNodeById( edge.front(), itNode );
 
 		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
@@ -287,7 +287,7 @@ class Graph
 		if ( itEdge != itNode->edges.end() ){
 			itNode->edges.remove( edge.back() );
 		}else{
-			
+
 			this->getNodeById( edge.back(), itNode );
 			itNode->edges.remove( edge.front() );
 
@@ -320,6 +320,7 @@ bool edgeIsBridge( vector<int> edge, Graph g );
 vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
 vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
+void printEdge( vector<int> edge );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -694,6 +695,9 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 	list<vector<int>> possibleEdges;
 	vector<int> choosenEdge;
 
+	// Variavel que retorna se deve ou não retirar o vertice do grafo visto que esse ficara desconexo apos a
+	// escolha e remocao da aresta em questao. Necessario retirar o vertice para que a verificacao da funcao
+	// de grafo conexo funcione corretamente.
 	deleteNode = false;
 	choosenEdge.assign( 4, -1 );
 
@@ -767,7 +771,7 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 }
 
-// Funcao que verifica se um grafo é euleriano
+// Funcao que verifica se um grafo é euleriano pelo algoritmo Fleury
 bool checkEulerianGraph( Graph g ){
 
 	int firstNodeId;
@@ -781,14 +785,17 @@ bool checkEulerianGraph( Graph g ){
 
 	// verifica se o grafo é conexo
 	if( !checkConnectedGraph( g, numComponents ) ){
+		cout << "Grafo desconexo!" << endl;
 		return false;
 	}
 
 	// le e remove arestas da matriz incidencia
 	firstNodeId = 1;
 	currentNode = firstNodeId;
-	
+
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
+
+		cout << "Vertice atual: " << currentNode <<endl;
 
 		edge = pickEdgeFleury( currentNode, g, linMatIncident, deleteNode );
 		currentNode = edge.back();
@@ -796,14 +803,24 @@ bool checkEulerianGraph( Graph g ){
 		if( currentNode != -1 ){
 
 			g.removeEdge( edge );
-			if( deleteNode ){
+
+			cout << "Aresta escolhida e removida: ";
+			printEdge( edge );
+
+			lastNodeId = currentNode;
+
+			//	verifica se a aresta removida nao e um laco
+			if( ( deleteNode ) && ( currentNode != firstNodeId ) ){
 
 				g.removeNodeById( edge.front() );
+				cout << "Vertice " << edge.front() << " removido pois ficou desconexo.";
 
                 if( edge.front() == firstNodeId ){
-					lastNodeId = -1;
+					cout << endl << "Vertice inicial desconexo, logo nao ha como retornar a ele." << endl;
 					break;
 				}
+
+				cout << " Rearranjado ids do grafo." << endl << endl;
 
 				// rearranjo dos ids dos vertices caso um seja deletado
 				if( currentNode > edge.front() ){
@@ -811,12 +828,24 @@ bool checkEulerianGraph( Graph g ){
 				}
 
 			}
-			lastNodeId = currentNode;
 
 		}
+		printGraph( g );
+		cout << endl;
 
 	}
 
+	cout << "Vertice inicial: " << firstNodeId << endl;
+	cout << "Vertice final: " << lastNodeId << endl;
+	cout << "Arestas restantes: " << g.incidentMatrix.size() << endl;
+
 	return ( ( lastNodeId == firstNodeId ) && ( g.incidentMatrix.empty() ) );
+
+}
+
+// Funcao para printar a edge
+void printEdge( vector<int> edge ){
+
+	cout << edge.front() << " --> " << edge.back() << endl;
 
 }
