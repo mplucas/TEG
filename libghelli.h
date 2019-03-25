@@ -304,9 +304,9 @@ class Graph
 
 list<string> explode( string s, char delim );
 list<int> explodeInt( string s, char delim );
-list<int> explodeGasp( string s );
+list<int> explodeTEG( string s );
 list<Node> readFile( string fileName );
-list<Node> readGasp();
+list<Node> readTEG();
 void showNodes( list <Node> g );
 void printMatrix( vector<vector<int>> auxMatrix );
 void printGraph( Graph g );
@@ -380,7 +380,7 @@ list<int> explodeInt( string s, char delim ){
 }
 
 // Funcao para dividir uma string em uma lista de inteiros, sendo que a string tem seus valores inteiros separados por barra de espaço.
-list<int> explodeGasp( string s ){
+list<int> explodeTEG( string s ){
 
 	list<int>    result;
 	stringstream ss( s );
@@ -412,7 +412,7 @@ list<Node> readFile( string fileName ){
 
 			if( !line.empty() ){
 
-				node.setEdges( explodeGasp( line ) );
+				node.setEdges( explodeTEG( line ) );
 				node.setId( ++lineCount );
 
 			}
@@ -447,7 +447,7 @@ list<Node> readFile( string fileName ){
 // }
 
 // ./a.out < grafo.txt
-list<Node> readGasp( string fileName ){
+list<Node> readTEG( string fileName ){
 
 	string     line;
     list<Node> nodes;
@@ -458,7 +458,7 @@ list<Node> readGasp( string fileName ){
 
 	while( getline( s, line ) ){
 
-	    node.setEdges( explodeGasp( line ) );
+	    node.setEdges( explodeTEG( line ) );
 		node.setId( lineCount++ );
 		nodes.push_back( node );
 
