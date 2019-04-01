@@ -9,7 +9,7 @@ int main()
   Graph* g = NULL;
 
   cout << "O grafo eh considerado nao direcionado!" << endl;
-  g = new Graph( readGasp( "grafo.txt" ), false );
+  g = new Graph( readTEG( "grafo.txt" ), false );
 
   cout << "GRAFO ATUAL------------------------------------------- " << endl;
   printGraph( *g );

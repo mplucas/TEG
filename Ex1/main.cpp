@@ -16,7 +16,7 @@ int main()
     cout << "O grafo eh direcionado? ( 'S' - Sim | 'N' - Não ): ";
     cin >> cDirected;
     bDirected = ( toupper( cDirected ) == 'S' );
-    g = new Graph( readGasp( "grafo.txt" ), bDirected );
+    g = new Graph( readTEG( "grafo.txt" ), bDirected );
 
     do{
 

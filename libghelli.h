@@ -279,7 +279,7 @@ class Graph
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
-		
+
 		this->getNodeById( edge.front(), itNode );
 
 		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
@@ -287,7 +287,7 @@ class Graph
 		if ( itEdge != itNode->edges.end() ){
 			itNode->edges.remove( edge.back() );
 		}else{
-			
+
 			this->getNodeById( edge.back(), itNode );
 			itNode->edges.remove( edge.front() );
 
@@ -307,6 +307,8 @@ list<int> explodeInt( string s, char delim );
 list<int> explodeTEG( string s );
 list<Node> readFile( string fileName );
 list<Node> readTEG();
+void showList(list <int> g);
+void showVector(vector <int> g);
 void showNodes( list <Node> g );
 void printMatrix( vector<vector<int>> auxMatrix );
 void printGraph( Graph g );
@@ -321,6 +323,8 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
 vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
 void printEdge( vector<int> edge );
+vector<int> graphBFS( Graph g, int startNode );
+void readBFS( vector<int>& pe, vector<int>& f, Graph g, int idNode, int& t );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -472,6 +476,15 @@ list<Node> readTEG( string fileName ){
 void showList(list <int> g){
 
     list <int> :: iterator it;
+    for(it = g.begin(); it != g.end(); ++it)
+        cout << *it << " ";
+
+}
+
+//function for printing the elements in a list
+void showVector(vector <int> g){
+
+    vector <int> :: iterator it;
     for(it = g.begin(); it != g.end(); ++it)
         cout << *it << " ";
 
@@ -792,7 +805,7 @@ bool checkEulerianGraph( Graph g ){
 	// le e remove arestas da matriz incidencia
 	firstNodeId = 1;
 	currentNode = firstNodeId;
-	
+
 	while( ( currentNode != -1 ) && ( !g.incidentMatrix.empty() ) ){
 
 		cout << "Vertice atual: " << currentNode << endl;
@@ -847,5 +860,40 @@ bool checkEulerianGraph( Graph g ){
 void printEdge( vector<int> edge ){
 
 	cout << edge.front() << " --> " << edge.back() << endl;
+
+}
+
+vector<int> graphBFS( Graph g, int startNode ){
+
+	vector<int> pe;
+	vector<int> f;
+	int t = 0;
+
+	pe.assign( g.numNodes, -1 );
+	readBFS( pe, f, g, startNode, t );
+
+	return f;
+
+}
+
+void readBFS( vector<int>& pe, vector<int>& f, Graph g, int idNode, int& t ){
+
+	vector<int> :: iterator itF;
+	list<int> :: iterator itNode;
+
+	itF = find( f.begin(), f.end(), idNode );
+
+	// se nao encontrou idNode em f.
+	if ( itF == f.end() ){
+
+		f.push_back( idNode );
+		pe[ idNode - 1 ] = ++t;
+		g.getNodeById( idNode, itNode );
+
+		for( auto idEdge:itNode->edges ){
+			readBFS( pe, f, g, idEdge, t );
+		}
+
+	}
 
 }

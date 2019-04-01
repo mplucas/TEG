@@ -9,19 +9,20 @@ int main()
     setbuf( stdout, NULL );
 
     Graph* g = NULL;
-    int numComponents;
+    vector<int> f;
+    int startNode;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
     g = new Graph( readTEG( "grafo.txt" ), false );
 
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
     printGraphInfo( *g );
-    cout << "------------------------------------------------------ " << endl;
-    if( checkEulerianGraph( *g ) ){
-        cout << "O grafo eh Euleriano!";
-    }else{
-        cout << "O grafo nao eh Euleriano!";
-    }
+    cout << "------------------------------------------------------ " << endl << endl;
+    cout << "Informe vertice de origem: ";
+    cin >> startNode;
+    f = graphBFS( g, startNode );
+    cout << endl << "Vetor da árvore geradora: " << endl;
+    showVector( f );
 
     return 0;
 
