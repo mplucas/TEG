@@ -324,8 +324,10 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 bool checkEulerianGraph( Graph g );
 void printEdge( vector<int> edge );
 vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps );
-void readDFS( vector<int>& pe, vector<int>& ps, vector<int>& f, Graph g, int idNode, int& t );
+void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vector<int>& f );
 vector<int> getRealConnections( int idNode, Graph g );
+vector<int> graphBFS( Graph g, int startNode, vector<int>& l );
+void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -883,23 +885,25 @@ vector<int> getRealConnections( int idNode, Graph g ){
 
 }
 
+// Funcao para calcular os vetores PE e PS da arvore geradora DFS de um grafo.
+// Tambem retorna um vetor f com a ordem dos vertices visitados.
 vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps ){
 
 	vector<int> f;
 	int t = 0;
 
-	pe.assign( g.numNodes, -1 );
-	ps.assign( g.numNodes, -1 );
-	readDFS( pe, ps, f, g, startNode, t );
+	pe.assign( g.numNodes, 0 );
+	ps.assign( g.numNodes, 0 );
+	readDFS( g, startNode, t, pe, ps, f );
 
 	return f;
 
 }
 
-void readDFS( vector<int>& pe, vector<int>& ps, vector<int>& f, Graph g, int idNode, int& t ){
+// Parte recursiva da funcao do DFS
+void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vector<int>& f ){
 
 	vector<int> :: iterator itF;
-	list<Node> :: iterator itNode;
 	vector<int> edges;
 
 	itF = find( f.begin(), f.end(), idNode );
@@ -913,11 +917,101 @@ void readDFS( vector<int>& pe, vector<int>& ps, vector<int>& f, Graph g, int idN
 		edges = getRealConnections( idNode, g );
 
 		for( auto idEdge:edges ){
-			readDFS( pe, ps, f, g, idEdge, t );
+			readDFS( g, idEdge, t, pe, ps, f );
 		}
 
 		// desempilha pela recursividade visto que todos seus filhos ja foram empilhados e processados
 		ps[ idNode - 1 ] = ++t;
+
+	}
+
+}
+
+// Funcao para calcular os vetor L da arvore geradora DFS de um grafo.
+// Tambem retorna um vetor f com a ordem dos vertices visitados.
+vector<int> graphBFS( Graph g, int startNode, vector<int>& l ){
+
+	list<int> f;
+	vector<int> fshow;
+	vector<int> father;
+	vector<int> level;
+	vector<int> brother;
+	vector<int> cousin;
+	vector<int> uncle;
+	int t = 0;
+
+	l.assign( g.numNodes, 0 );
+	father.assign( g.numNodes, 0 );
+	level.assign( g.numNodes, 0 );
+	brother.assign( g.numNodes, 0 );
+	cousin.assign( g.numNodes, 0 );
+	uncle.assign( g.numNodes, 0 );
+	// Vertice father
+	f.push_back( startNode );
+	l[ startNode - 1 ] = ++t;
+
+	while( !f.empty() ){
+		readBFS( g, t, l, f, fshow, father, level, brother, cousin, uncle );
+	}
+
+	cout << "F    : ";
+	showVector( fshow );
+	cout << endl;
+	cout << "pai  : ";
+	showVector( father );
+	cout << endl;
+	cout << "nivel: ";
+	showVector( level );
+	cout << endl;
+	cout << "irmao: ";
+	showVector( brother );
+	cout << endl;
+	cout << "primo: ";
+	showVector( cousin );
+	cout << endl;
+	cout << "tio  : ";
+	showVector( uncle );
+	cout << endl;
+
+	return fshow;
+
+}
+
+// Parte recursiva da funcao do BFS
+void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle ){
+
+	vector<int> edges;
+	int idNode;
+
+	// marca vertice como processado
+	idNode = f.front();
+	fshow.push_back( idNode );
+	f.pop_front();
+
+	edges = getRealConnections( idNode, g );
+
+	for( auto idEdge:edges ){
+
+		if( l[ idEdge - 1 ] == 0 ){
+
+			father[ idEdge - 1 ] = idNode;
+			level[ idEdge - 1 ] = level[ idNode - 1 ] + 1;
+			f.push_back( idEdge );
+			l[ idEdge - 1 ] = ++t;
+
+		}else if( level[ idEdge - 1 ] == level[ idNode - 1 ] ){
+
+			if( father[ idEdge - 1 ] == father[ idNode - 1 ] ){
+				brother[ idEdge - 1 ] = idNode;
+				brother[ idNode - 1 ] = idEdge;
+			}else{
+				cousin[ idEdge - 1 ] = idNode;
+				cousin[ idNode - 1 ] = idEdge;
+			}
+
+		}else if( level[ idEdge - 1 ] == level[ idNode - 1 ] + 1 ){
+			uncle[ idEdge - 1 ] = idNode;
+		}
 
 	}
 

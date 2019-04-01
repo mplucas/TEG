@@ -12,6 +12,7 @@ int main()
     vector<int> f;
     vector<int> pe;
     vector<int> ps;
+    vector<int> l;
     int startNode;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
@@ -33,6 +34,7 @@ int main()
   	cout << endl;
 
     cout << endl << "BFS -------------------------------------------------- " << endl;
+    f = graphBFS( *g, startNode, l );
 
     return 0;
 
