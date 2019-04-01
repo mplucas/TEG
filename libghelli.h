@@ -34,12 +34,12 @@ class Node
 class Graph
 {
 
-    public:
+	public:
 
 	int                 numNodes;
 	int                 numEdges;
 	bool                directed;
-    list<Node>          nodes;
+	list<Node>          nodes;
 	vector<vector<int>> adjacentMatrix;
 	vector<vector<int>> incidentMatrix;
 
@@ -69,11 +69,11 @@ class Graph
 
 	}
 
-    list<Node> getNodes(){
-        return nodes;
-    }
+	list<Node> getNodes(){
+	    return nodes;
+	}
 
-    void setNodes( list<Node> ns ){
+	void setNodes( list<Node> ns ){
 
 		list<Node>  :: iterator itNode;
 
@@ -87,7 +87,7 @@ class Graph
 
 		}
 
-    }
+	}
 
 	bool getDirected(){
 		return directed;
@@ -105,7 +105,7 @@ class Graph
 
 		auxMatrix.resize( lin );
 		for ( i = 0 ; i < lin ; i++ )
-   			auxMatrix[i].assign( col, 0 );
+			auxMatrix[i].assign( col, 0 );
 
 		return auxMatrix;
 
@@ -323,8 +323,9 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
 vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
 void printEdge( vector<int> edge );
-vector<int> graphBFS( Graph g, int startNode );
-void readBFS( vector<int>& pe, vector<int>& f, Graph g, int idNode, int& t );
+vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps );
+void readDFS( vector<int>& pe, vector<int>& ps, vector<int>& f, Graph g, int idNode, int& t );
+vector<int> getRealConnections( int idNode, Graph g );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -403,8 +404,8 @@ list<int> explodeTEG( string s ){
 list<Node> readFile( string fileName ){
 
 	string     line;
-    list<Node> nodes;
-    Node       node;
+	list<Node> nodes;
+	Node       node;
 	ifstream   file( fileName );
 	int        lineCount = 0;
 
@@ -454,8 +455,8 @@ list<Node> readFile( string fileName ){
 list<Node> readTEG( string fileName ){
 
 	string     line;
-    list<Node> nodes;
-    Node       node;
+	list<Node> nodes;
+	Node       node;
 	int        lineCount = 1;
 	ifstream   file( fileName );
 	istream&   s = file;
@@ -863,23 +864,43 @@ void printEdge( vector<int> edge ){
 
 }
 
-vector<int> graphBFS( Graph g, int startNode ){
 
-	vector<int> pe;
+// Funcao para retornar uma lista com os verices conectados ao vertice idNode, isso porque
+// pela estrutura de nodes as vezes nao se consegue rastrear isso se a aresta nao esta
+// saindo do vertico idNode.
+vector<int> getRealConnections( int idNode, Graph g ){
+
+	vector<int> connections;
+	int i;
+
+	for( i = 0; i < g.adjacentMatrix[ idNode - 1 ].size(); i++ ){
+		if( g.adjacentMatrix[ idNode - 1 ][ i ] != 0 ){
+			connections.push_back( i + 1 );
+		}
+	}
+
+	return connections;
+
+}
+
+vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps ){
+
 	vector<int> f;
 	int t = 0;
 
 	pe.assign( g.numNodes, -1 );
-	readBFS( pe, f, g, startNode, t );
+	ps.assign( g.numNodes, -1 );
+	readDFS( pe, ps, f, g, startNode, t );
 
 	return f;
 
 }
 
-void readBFS( vector<int>& pe, vector<int>& f, Graph g, int idNode, int& t ){
+void readDFS( vector<int>& pe, vector<int>& ps, vector<int>& f, Graph g, int idNode, int& t ){
 
 	vector<int> :: iterator itF;
-	list<int> :: iterator itNode;
+	list<Node> :: iterator itNode;
+	vector<int> edges;
 
 	itF = find( f.begin(), f.end(), idNode );
 
@@ -887,12 +908,16 @@ void readBFS( vector<int>& pe, vector<int>& f, Graph g, int idNode, int& t ){
 	if ( itF == f.end() ){
 
 		f.push_back( idNode );
+		// empilha
 		pe[ idNode - 1 ] = ++t;
-		g.getNodeById( idNode, itNode );
+		edges = getRealConnections( idNode, g );
 
-		for( auto idEdge:itNode->edges ){
-			readBFS( pe, f, g, idEdge, t );
+		for( auto idEdge:edges ){
+			readDFS( pe, ps, f, g, idEdge, t );
 		}
+
+		// desempilha pela recursividade visto que todos seus filhos ja foram empilhados e processados
+		ps[ idNode - 1 ] = ++t;
 
 	}
 

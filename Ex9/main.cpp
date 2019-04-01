@@ -10,6 +10,8 @@ int main()
 
     Graph* g = NULL;
     vector<int> f;
+    vector<int> pe;
+    vector<int> ps;
     int startNode;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
@@ -20,9 +22,17 @@ int main()
     cout << "------------------------------------------------------ " << endl << endl;
     cout << "Informe vertice de origem: ";
     cin >> startNode;
-    f = graphBFS( g, startNode );
-    cout << endl << "Vetor da árvore geradora: " << endl;
-    showVector( f );
+
+    cout << endl << "DFS -------------------------------------------------- " << endl;
+    f = graphDFS( *g, startNode, pe, ps );
+    cout << "PE(v): ";
+  	showVector( pe );
+  	cout << endl;
+  	cout << "PS(v): ";
+  	showVector( ps );
+  	cout << endl;
+
+    cout << endl << "BFS -------------------------------------------------- " << endl;
 
     return 0;
 
