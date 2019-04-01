@@ -326,7 +326,7 @@ void printEdge( vector<int> edge );
 vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps );
 void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vector<int>& f );
 vector<int> getRealConnections( int idNode, Graph g );
-vector<int> graphBFS( Graph g, int startNode, vector<int>& l );
+vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 
 // função para separar uma string a cada ocorrencia de um delimitador
@@ -929,15 +929,10 @@ void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vec
 
 // Funcao para calcular os vetor L da arvore geradora DFS de um grafo.
 // Tambem retorna um vetor f com a ordem dos vertices visitados.
-vector<int> graphBFS( Graph g, int startNode, vector<int>& l ){
+vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle ){
 
 	list<int> f;
 	vector<int> fshow;
-	vector<int> father;
-	vector<int> level;
-	vector<int> brother;
-	vector<int> cousin;
-	vector<int> uncle;
 	int t = 0;
 
 	l.assign( g.numNodes, 0 );
@@ -953,25 +948,6 @@ vector<int> graphBFS( Graph g, int startNode, vector<int>& l ){
 	while( !f.empty() ){
 		readBFS( g, t, l, f, fshow, father, level, brother, cousin, uncle );
 	}
-
-	cout << "F    : ";
-	showVector( fshow );
-	cout << endl;
-	cout << "pai  : ";
-	showVector( father );
-	cout << endl;
-	cout << "nivel: ";
-	showVector( level );
-	cout << endl;
-	cout << "irmao: ";
-	showVector( brother );
-	cout << endl;
-	cout << "primo: ";
-	showVector( cousin );
-	cout << endl;
-	cout << "tio  : ";
-	showVector( uncle );
-	cout << endl;
 
 	return fshow;
 
@@ -1011,6 +987,7 @@ void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow,
 
 		}else if( level[ idEdge - 1 ] == level[ idNode - 1 ] + 1 ){
 			uncle[ idEdge - 1 ] = idNode;
+			uncle[ idNode - 1 ] = idEdge;
 		}
 
 	}

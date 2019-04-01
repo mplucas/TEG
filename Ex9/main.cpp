@@ -13,7 +13,13 @@ int main()
     vector<int> pe;
     vector<int> ps;
     vector<int> l;
+    vector<int> father;
+  	vector<int> level;
+  	vector<int> brother;
+  	vector<int> cousin;
+  	vector<int> uncle;
     int startNode;
+    int i;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
     g = new Graph( readTEG( "grafo.txt" ), false );
@@ -25,16 +31,47 @@ int main()
     cin >> startNode;
 
     cout << endl << "DFS -------------------------------------------------- " << endl;
+    cout << "Vertice:";
+    for( i = 1; i <= g->numNodes; i++ ){
+      cout << " " << i;
+    }
     f = graphDFS( *g, startNode, pe, ps );
-    cout << "PE(v): ";
+    cout << endl << "--------------------------------------------------" << endl;
+    cout << "PE(v)  : ";
   	showVector( pe );
   	cout << endl;
-  	cout << "PS(v): ";
+  	cout << "PS(v)  : ";
   	showVector( ps );
   	cout << endl;
 
     cout << endl << "BFS -------------------------------------------------- " << endl;
-    f = graphBFS( *g, startNode, l );
+    cout << "Vertice:";
+    for( i = 1; i <= g->numNodes; i++ ){
+      cout << " " << i;
+    }
+    f = graphBFS( *g, startNode, l, father, level, brother, cousin, uncle );
+    cout << endl << "--------------------------------------------------" << endl;
+    cout << "F      : ";
+  	showVector( f );
+  	cout << endl;
+    cout << "L(v)   : ";
+  	showVector( l );
+  	cout << endl;
+  	cout << "pai    : ";
+  	showVector( father );
+  	cout << endl;
+  	cout << "nivel  : ";
+  	showVector( level );
+  	cout << endl;
+  	cout << "irmao  : ";
+  	showVector( brother );
+  	cout << endl;
+  	cout << "primo  : ";
+  	showVector( cousin );
+  	cout << endl;
+  	cout << "tio    : ";
+  	showVector( uncle );
+  	cout << endl;
 
     return 0;
 
