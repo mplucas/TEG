@@ -475,13 +475,14 @@ list<Node> readGraph( string fileName ){
 
 }
 
-void readWE( string v, int& we[2] ){
+void readWE( string v, vector<int>& we ){
 
 	int div;
 
+	we.clear();
 	div = v.find( "," );
-	we[0] = atoi( v.substr( 0, div ) );
-	we[1] = atoi( v.substr( div + 1 ) );
+	we.push_back( stoi( v.substr( 0, div ) ) );
+	we.push_back( stoi( v.substr( div + 1 ) ) );
 
 }
 
@@ -490,10 +491,10 @@ void readWeightedEdges( string s, list<int>& edges, list<int>& edgeWeight ){
 	list<int>    result;
 	stringstream ss( s );
 	string       value;
-	int          weightedEdge[2];
+	vector<int>  weightedEdge;
 
 	while( ss >> value ){
-		weightedEdge = readWE( value, weightedEdge );
+		readWE( value, weightedEdge );
 		edges.push_back( weightedEdge[0] );
 		edgeWeight.push_back( weightedEdge[1] );
 	}

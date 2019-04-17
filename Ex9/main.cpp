@@ -22,7 +22,7 @@ int main()
     int i;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
-    g = new Graph( readTEG( "grafo.txt" ), false );
+    g = new Graph( readGraph( "grafo.txt" ), false );
 
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
     printGraphInfo( *g );
