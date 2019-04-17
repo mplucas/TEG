@@ -9,10 +9,10 @@ class Node
 
 	public:
 
-	int       id;
-	list<int> edges;
-	list<int> edgeWeight;
-	int       degree;
+	int         id;
+	list<int>   edges;
+	vector<int> edgeWeight;
+	int         degree;
 
 	int getId(){
 		return id;
@@ -329,6 +329,8 @@ void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vec
 vector<int> getRealConnections( int idNode, Graph g );
 vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
+void printWeightedGraph( Graph g );
+list<Node> readWeightedGraph( string fileName );
 
 // função para separar uma string a cada ocorrencia de um delimitador
 // ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
@@ -569,6 +571,25 @@ void printGraph( Graph g ){
 
 		cout << nodeList.id << " : ";
 		for (auto node:nodeList.edges) cout << node << " ";
+		cout << endl;
+
+	}
+
+}
+
+// Função para printar o grafo ponderadp
+void printWeightedGraph( Graph g ){
+
+	int i;
+
+	cout << "Grafo:" << endl;
+
+	for (auto nodeList:g.nodes){
+
+		cout << nodeList.id << " : ";
+		for( i = 0; i < nodeList.edges.size(); i++ ){
+				cout << nodeList.edges.at( i ) << "," << nodeList.edgeWeight.at( i ) << " ";
+		}
 		cout << endl;
 
 	}
