@@ -11,6 +11,7 @@ class Node
 
 	int       id;
 	list<int> edges;
+	list<int> edgeWeight;
 	int       degree;
 
 	int getId(){
@@ -306,7 +307,7 @@ list<string> explode( string s, char delim );
 list<int> explodeInt( string s, char delim );
 list<int> explodeTEG( string s );
 list<Node> readFile( string fileName );
-list<Node> readTEG();
+list<Node> readGraph();
 void showList(list <int> g);
 void showVector(vector <int> g);
 void showNodes( list <Node> g );
@@ -401,7 +402,6 @@ list<int> explodeTEG( string s ){
 
 }
 
-
 // le o arquivo grafo.txt e gera uma lista de Nodes
 list<Node> readFile( string fileName ){
 
@@ -454,7 +454,7 @@ list<Node> readFile( string fileName ){
 // }
 
 // ./a.out < grafo.txt
-list<Node> readTEG( string fileName ){
+list<Node> readGraph( string fileName ){
 
 	string     line;
 	list<Node> nodes;
@@ -465,7 +465,55 @@ list<Node> readTEG( string fileName ){
 
 	while( getline( s, line ) ){
 
-	    node.setEdges( explodeTEG( line ) );
+		node.setEdges( explodeTEG( line ) );
+		node.setId( lineCount++ );
+		nodes.push_back( node );
+
+	}
+
+	return nodes;
+
+}
+
+void readWE( string v, int& we[2] ){
+
+	int div;
+
+	div = v.find( "," );
+	we[0] = atoi( v.substr( 0, div ) );
+	we[1] = atoi( v.substr( div + 1 ) );
+
+}
+
+void readWeightedEdges( string s, list<int>& edges, list<int>& edgeWeight ){
+
+	list<int>    result;
+	stringstream ss( s );
+	string       value;
+	int          weightedEdge[2];
+
+	while( ss >> value ){
+		weightedEdge = readWE( value, weightedEdge );
+		edges.push_back( weightedEdge[0] );
+		edgeWeight.push_back( weightedEdge[1] );
+	}
+
+}
+
+// ./a.out < grafo.txt
+list<Node> readWeightedGraph( string fileName ){
+
+	string     line;
+	list<Node> nodes;
+	Node       node;
+	int        lineCount = 1;
+	ifstream   file( fileName );
+	istream&   s = file;
+
+	while( getline( s, line ) ){
+
+		//node.setEdges( explodeTEG( line ) );
+		readWeightedEdges( line, node.edges, node.edgeWeight );
 		node.setId( lineCount++ );
 		nodes.push_back( node );
 
@@ -991,5 +1039,12 @@ void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow,
 		}
 
 	}
+
+}
+
+// Algoritmo de DIJKSTRA
+vector<vector<int>> dijkstraCalc( Graph g, int idNode ){
+
+
 
 }
