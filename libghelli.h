@@ -1,5 +1,8 @@
 #include <bits/stdc++.h>
 
+// Para compilar todos os programas:
+// g++ -std=c++11 libghelli.h Ex1/main.cpp Ex3/main.cpp Ex4/main.cpp Ex5/main.cpp Ex9/main.cpp Ex11/main.cpp -Wall
+
 // Classes
 
 using namespace std;
@@ -301,91 +304,17 @@ class Graph
 
 // Functions
 
-list<string> explode( string s, char delim );
-list<int> explodeInt( string s, char delim );
-list<int> explodeTEG( string s );
-list<Node> readFile( string fileName );
 list<Node> readGraph();
-void showList(list <int> g);
 void showVector(vector <int> g);
-void showNodes( list <Node> g );
-void printMatrix( vector<vector<int>> auxMatrix );
 void printGraph( Graph g );
-void printNodesDegrees( Graph g );
 void printGraphInfo( Graph g );
-bool paintNodes( int idNode, Graph g, list<int>& currentColor, list<int>& inverseColor );
 bool check2PartGraph( Graph g );
-void removeComponent( int idNode, Graph g, list<int>& notCheckedList );
 bool checkConnectedGraph( Graph g, int& numComponents );
-bool edgeIsBridge( vector<int> edge, Graph g );
-vector<int> readEdgeIncMatrix( vector<int> incMatrixLine );
-vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode );
 bool checkEulerianGraph( Graph g );
-void printEdge( vector<int> edge );
 vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps );
-void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vector<int>& f );
-vector<int> getRealConnections( int idNode, Graph g );
 vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
-void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 void printWeightedGraph( Graph g );
 list<Node> readWeightedGraph( string fileName );
-
-// função para separar uma string a cada ocorrencia de um delimitador
-// ex: 1: 1 2 com delimitador ':' irá gerar uma lista com as strings '1' e '1 2'
-list<string> explode( string s, char delim ){
-
-	int          posDelim;
-	string       value = "";
-	list<string> result;
-
-	while( !s.empty() ){
-
-		posDelim = s.find( delim );
-		value = s.substr( 0, posDelim );
-		s.erase( 0, posDelim + 1 );
-
-		if( !value.empty() ){
-			result.push_back( value );
-		}
-
-		if( posDelim < 0 ){
-			break;
-		}
-
-	}
-
-	return result;
-
-}
-
-
-// função para separar uma string em valores de int a cada ocorrencia de um delimitador
-// ex: 1 2 com delimitador ' ' irá gerar uma lista com os valores de int '1' e '2'
-list<int> explodeInt( string s, char delim ){
-
-	int       posDelim;
-	string    value = "";
-	list<int> result;
-
-	while( !s.empty() ){
-
-		posDelim = s.find( delim );
-		value = s.substr( 0, posDelim );
-		s.erase( 0, posDelim + 1 );
-
-		if( !value.empty() ){
-			result.push_back( stoi( value ) );
-		}
-
-		if( posDelim < 0 ){
-			break;
-		}
-
-	}
-
-	return result;
-
-}
 
 // Funcao para dividir uma string em uma lista de inteiros, sendo que a string tem seus valores inteiros separados por barra de espaço.
 list<int> explodeTEG( string s ){
@@ -402,44 +331,7 @@ list<int> explodeTEG( string s ){
 
 }
 
-// le o arquivo grafo.txt e gera uma lista de Nodes
-list<Node> readFile( string fileName ){
-
-	string     line;
-	list<Node> nodes;
-	Node       node;
-	ifstream   file( fileName );
-	int        lineCount = 0;
-
-	if( file.is_open() ){
-
-    	while ( !file.eof() ){
-
-	    	getline( file, line );
-
-			if( !line.empty() ){
-
-				node.setEdges( explodeTEG( line ) );
-				node.setId( ++lineCount );
-
-			}
-
-			nodes.push_back( node );
-
-	    }
-
-	    file.close();
-
-	}else{
-
-		cout << "Nao foi possivel abrir o arquivo.";// função para ambientes com c++ de versão antiga
-
-    }
-
-    return nodes;
-
-}
-
+// função para ambientes com c++ de versão antiga
 // int stoi( string s ){
 
 //     // object from the class stringstream
@@ -513,7 +405,6 @@ list<Node> readWeightedGraph( string fileName ){
 
 	while( getline( s, line ) ){
 
-		//node.setEdges( explodeTEG( line ) );
 		readWeightedEdges( line, node.edges, node.edgeWeight );
 		node.setId( lineCount++ );
 		nodes.push_back( node );
@@ -866,6 +757,13 @@ vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool&
 
 }
 
+// Funcao para printar a edge
+void printEdge( vector<int> edge ){
+
+	cout << edge.front() << " --> " << edge.back() << endl;
+
+}
+
 // Funcao que verifica se um grafo é euleriano pelo algoritmo Fleury
 bool checkEulerianGraph( Graph g ){
 
@@ -938,14 +836,6 @@ bool checkEulerianGraph( Graph g ){
 
 }
 
-// Funcao para printar a edge
-void printEdge( vector<int> edge ){
-
-	cout << edge.front() << " --> " << edge.back() << endl;
-
-}
-
-
 // Funcao para retornar uma lista com os verices conectados ao vertice idNode, isso porque
 // pela estrutura de nodes as vezes nao se consegue rastrear isso se a aresta nao esta
 // saindo do vertico idNode.
@@ -961,21 +851,6 @@ vector<int> getRealConnections( int idNode, Graph g ){
 	}
 
 	return connections;
-
-}
-
-// Funcao para calcular os vetores PE e PS da arvore geradora DFS de um grafo.
-// Tambem retorna um vetor f com a ordem dos vertices visitados.
-vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps ){
-
-	vector<int> f;
-	int t = 0;
-
-	pe.assign( g.numNodes, 0 );
-	ps.assign( g.numNodes, 0 );
-	readDFS( g, startNode, t, pe, ps, f );
-
-	return f;
 
 }
 
@@ -1006,29 +881,18 @@ void readDFS( Graph g, int idNode, int& t, vector<int>& pe, vector<int>& ps, vec
 
 }
 
-// Funcao para calcular os vetor L da arvore geradora DFS de um grafo.
+// Funcao para calcular os vetores PE e PS da arvore geradora DFS de um grafo.
 // Tambem retorna um vetor f com a ordem dos vertices visitados.
-vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle ){
+vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps ){
 
-	list<int> f;
-	vector<int> fshow;
+	vector<int> f;
 	int t = 0;
 
-	l.assign( g.numNodes, 0 );
-	father.assign( g.numNodes, 0 );
-	level.assign( g.numNodes, 0 );
-	brother.assign( g.numNodes, 0 );
-	cousin.assign( g.numNodes, 0 );
-	uncle.assign( g.numNodes, 0 );
-	// Vertice father
-	f.push_back( startNode );
-	l[ startNode - 1 ] = ++t;
+	pe.assign( g.numNodes, 0 );
+	ps.assign( g.numNodes, 0 );
+	readDFS( g, startNode, t, pe, ps, f );
 
-	while( !f.empty() ){
-		readBFS( g, t, l, f, fshow, father, level, brother, cousin, uncle );
-	}
-
-	return fshow;
+	return f;
 
 }
 
@@ -1070,6 +934,32 @@ void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow,
 		}
 
 	}
+
+}
+
+// Funcao para calcular os vetor L da arvore geradora DFS de um grafo.
+// Tambem retorna um vetor f com a ordem dos vertices visitados.
+vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle ){
+
+	list<int> f;
+	vector<int> fshow;
+	int t = 0;
+
+	l.assign( g.numNodes, 0 );
+	father.assign( g.numNodes, 0 );
+	level.assign( g.numNodes, 0 );
+	brother.assign( g.numNodes, 0 );
+	cousin.assign( g.numNodes, 0 );
+	uncle.assign( g.numNodes, 0 );
+	// Vertice father
+	f.push_back( startNode );
+	l[ startNode - 1 ] = ++t;
+
+	while( !f.empty() ){
+		readBFS( g, t, l, f, fshow, father, level, brother, cousin, uncle );
+	}
+
+	return fshow;
 
 }
 

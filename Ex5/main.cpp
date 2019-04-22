@@ -9,7 +9,6 @@ int main()
     setbuf( stdout, NULL );
 
     Graph* g = NULL;
-    int numComponents;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
     g = new Graph( readGraph( "grafo.txt" ), false );
