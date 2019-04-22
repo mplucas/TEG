@@ -669,8 +669,33 @@ vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& fathe
 
 }
 
+// parte recursiva de dijkstra
+void readDijkstra( vector<int>& f,  )
+
 // Algoritmo de DIJKSTRA
 vector<vector<int>> dijkstraCalc( Graph g, int idNode ){
+
+	// matriz para armazenamento dos vetores de diskstra
+	// [0] - vetor de vertices
+	// [1] - vetor de estimativas
+	// [2] - vetor de precedentes
+	vector<vector<int>> vetoresDij;
+	// vetor para marcar vertices ja percorridos
+	vector<int> f;
+
+	vetoresDij.resize( 3 );
+	// marca vetores de estimativas e precedentes com valor inicial
+	for ( i = 1 ; i < 3 ; i++ )
+		vetoresDij[ i ].assign( g.numNodes, -1 );
+
+	// popula vetor de vertices
+	for( auto node:g.nodes ){
+		vetoresDij[ 0 ].push_back( node.id );
+	}
+
+	// marca valores inciais do vertice inicial
+	vetoresDij[ 1 ][ idNode ] = 0;
+	vetoresDij[ 2 ][ idNode ] = idNode;
 
 
 
