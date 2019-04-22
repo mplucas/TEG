@@ -45,6 +45,7 @@ class Graph
 	bool                directed;
 	list<Node>          nodes;
 	vector<vector<int>> adjacentMatrix;
+	vector<vector<int>> weightMatrix;
 	vector<vector<int>> incidentMatrix;
 
 	Graph(){
@@ -115,24 +116,75 @@ class Graph
 
 	}
 
+	bool isWeighted(){
+
+		for( auto itNode:nodes ){
+
+			if( !itNode.edgeWeight.empty() )
+				return true;
+
+		}
+
+		return false;
+
+	}
+
 	// Função para gerar a matriz adjacencia do grafo
 	void calcAdjacentMatrix(){
 
+		unsigned int i;
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
+		list<int>  :: iterator itEdgeWeight;
 
 		adjacentMatrix = resizeMatrix( numNodes, numNodes );
 
-		for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
-			for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+		if( !this->isWeighted() ){
 
-				adjacentMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
 
-				if( !directed ){
-					adjacentMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
+			for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+				for( itEdge = itNode->edges.begin(); itEdge != itNode->edges.end(); itEdge++ ){
+
+					adjacentMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
+
+					if( !directed )
+						adjacentMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
+
+				}
+			}
+
+		}else{
+
+			weightMatrix = resizeMatrix( numNodes, numNodes );
+
+			for( itNode = nodes.begin(); itNode != nodes.end(); itNode++ ){
+
+				itEdge = itNode->edges.begin();
+				itEdgeWeight = itNode->edgeWeight.begin();
+
+				for( i = 0; i < itNode->edges.size(); i++ ){
+
+					adjacentMatrix[ itNode->id - 1 ][ *itEdge - 1 ]++;
+
+					if( ( weightMatrix[ itNode->id - 1 ][ *itEdge - 1 ] > *itEdgeWeight ) || ( weightMatrix[ itNode->id - 1 ][ *itEdge - 1 ] == 0 ) )
+						weightMatrix[ itNode->id - 1 ][ *itEdge - 1 ] = *itEdgeWeight;
+
+					if( !directed ){
+
+						adjacentMatrix[ *itEdge - 1 ][ itNode->id - 1 ]++;
+
+						if( ( weightMatrix[ *itEdge - 1 ][ itNode->id - 1 ] > *itEdgeWeight )  || ( weightMatrix[ *itEdge - 1 ][ itNode->id - 1 ] == 0 ) )
+							weightMatrix[ *itEdge - 1 ][ itNode->id - 1 ] = *itEdgeWeight;
+
+					}
+
+					itEdge++;
+					itEdgeWeight++;
+
 				}
 
 			}
+
 		}
 
 	}

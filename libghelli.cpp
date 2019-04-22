@@ -222,6 +222,9 @@ void printWGraphInfo( Graph g ){
 	cout << "Matriz Adjacencia:" << endl;
 	printMatrix( g.adjacentMatrix );
 	cout << endl;
+	cout << "Matriz Adjacencia com pesos:" << endl;
+	printMatrix( g.weightMatrix );
+	cout << endl;
 	cout << "Matriz Incidencia:" << endl;
 	printMatrix( g.incidentMatrix );
 	cout << endl;
