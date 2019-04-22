@@ -11,7 +11,7 @@ class Node
 
 	int         id;
 	list<int>   edges;
-	vector<int> edgeWeight;
+	list<int> edgeWeight;
 	int         degree;
 
 	int getId(){
@@ -114,8 +114,6 @@ class Graph
 
 	// Função para gerar a matriz adjacencia do grafo
 	void calcAdjacentMatrix(){
-
-		int i;
 
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
@@ -519,6 +517,8 @@ list<Node> readWeightedGraph( string fileName ){
 		readWeightedEdges( line, node.edges, node.edgeWeight );
 		node.setId( lineCount++ );
 		nodes.push_back( node );
+		node.edges.clear();
+		node.edgeWeight.clear();
 
 	}
 
@@ -547,7 +547,7 @@ void showVector(vector <int> g){
 // Função para printar matriz em tela
 void printMatrix( vector<vector<int>> auxMatrix ){
 
-	int i, j;
+	unsigned int i, j;
 
 	for( i = 0; i < auxMatrix.size(); i++ ){
 		for( j = 0; j < auxMatrix[i].size(); j++){
@@ -577,18 +577,27 @@ void printGraph( Graph g ){
 
 }
 
-// Função para printar o grafo ponderadp
+// Função para printar o grafo ponderado
 void printWeightedGraph( Graph g ){
 
-	int i;
+	unsigned int i;
+	list<int> :: iterator itEdge;
+	list<int> :: iterator itEdgeWeight;
 
 	cout << "Grafo:" << endl;
 
 	for (auto nodeList:g.nodes){
 
+		itEdge       = nodeList.edges.begin();
+		itEdgeWeight = nodeList.edgeWeight.begin();
 		cout << nodeList.id << " : ";
+
 		for( i = 0; i < nodeList.edges.size(); i++ ){
-				cout << nodeList.edges.at( i ) << "," << nodeList.edgeWeight.at( i ) << " ";
+
+				cout << *itEdge << "," << *itEdgeWeight << " ";
+				itEdge++;
+				itEdgeWeight++;
+
 		}
 		cout << endl;
 
@@ -751,7 +760,7 @@ bool edgeIsBridge( vector<int> edge, Graph g ){
 // recebe uma linha da matriz incidencia e retorna um vetor com o vertice origem na primeira posicao e o vertice destino na segunda posicao
 vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 
-	int i;
+	unsigned int i;
 	vector<int> edge;
 
 	for( i = 0; i < incMatrixLine.size(); i++ ){
@@ -773,7 +782,7 @@ vector<int> readEdgeIncMatrix( vector<int> incMatrixLine ){
 // Funcao para escolher a aresta correta para o algoritmo de fleury
 vector<int> pickEdgeFleury( int currentNode, Graph g, int& linMatIncident, bool& deleteNode ){
 
-	int i;
+	unsigned int i;
 	vector<int> edge;	/* [0] - vertice de origem
 						 * [1] - vertice de linMatIncidentdestino
 						 * [2] - 0 nao eh ponte, 1 é ponte
@@ -943,7 +952,7 @@ void printEdge( vector<int> edge ){
 vector<int> getRealConnections( int idNode, Graph g ){
 
 	vector<int> connections;
-	int i;
+	unsigned int i;
 
 	for( i = 0; i < g.adjacentMatrix[ idNode - 1 ].size(); i++ ){
 		if( g.adjacentMatrix[ idNode - 1 ][ i ] != 0 ){
