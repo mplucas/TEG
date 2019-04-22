@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//compilar: g++ -std=c++11 ../libghelli.h main.cpp -w
+//compilar: g++ -std=c++11 ../libghelli.cpp main.cpp -Wall
 int main()
 {
 

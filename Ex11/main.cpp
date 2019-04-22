@@ -2,7 +2,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-//compilar: g++ -std=c++11 ../libghelli.h main.cpp -Wall
+//compilar: g++ -std=c++11 ../libghelli.cpp main.cpp -Wall
 int main()
 {
 
@@ -18,7 +18,7 @@ int main()
     g = new Graph( readWeightedGraph( "grafo.txt" ), bDirected );
 
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
-    printWeightedGraph( *g );
+    printWGraphInfo( *g );
     cout << "------------------------------------------------------ " << endl << endl;
 
     return 0;
