@@ -356,7 +356,7 @@ class Graph
 
 // Functions
 
-list<Node> readGraph();
+list<Node> readGraph( string fileName );
 void showVector(vector <int> g);
 void printGraph( Graph g );
 void printGraphInfo( Graph g );
