@@ -669,8 +669,79 @@ vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& fathe
 
 }
 
+// função para retornar o indice do vertice dos vetores de dijkstra porque há a possibilidade de um no ter sido deletado
+// e por isso o indice poderia representar outro vertice
+int findInDijkstra( int idNode, vector<vector<int>> vectorsDij ){
+
+	vector<int> :: iterator itNode;
+	int i = 0;
+
+	for( itNode = vectorsDij[ 0 ].begin(); itNode != vectorsDij[ 0 ].end(); itNode++ ){
+
+		if( *itNode == idNode )
+			return i;
+		i++;
+
+	}
+
+	return -1;
+
+}
+
 // parte recursiva de dijkstra
-void readDijkstra( vector<int>& f,  )
+void readDijkstra( int idNode, Graph g, vector<int>& f, vector<vector<int>>& vectorsDij ){
+
+	vector<int> edges;
+	vector<int> :: iterator itF;
+	int vectorDijIndex;
+	int estimate;
+
+	itF = find( f.begin(), f.end(), idNode );
+
+	// se nao encontrou idNode em f.
+	if ( itF == f.end() ){
+
+		f.push_back( idNode );
+		edges = getRealConnections( idNode, g );
+
+
+		for( auto idEdge:edges ){
+
+			vectorDijIndex = findInDijkstra( idEdge, vectorsDij );
+			if( vectorDijIndex != -1 ){
+
+				// estimativa = peso do precedente + peso da aresta
+				estimate = vectorsDij[ 1 ][ idNode - 1 ] + g.weightMatrix[ idNode - 1 ][ idEdge - 1 ];
+
+				if( (( estimate < vectorsDij[ 1 ][ vectorDijIndex ] ) && ( vectorsDij[ 1 ][ vectorDijIndex ] != -1 ))
+					|| ( vectorsDij[ 1 ][ vectorDijIndex ] == -1 ) ){
+
+					// se tiver que trocar alguma estimativa retira de vertice f para ser reprocessado com nova estimativa.
+					if( ( estimate < vectorsDij[ 1 ][ vectorDijIndex ] ) && ( vectorsDij[ 1 ][ vectorDijIndex ] != -1 ) ){
+
+						itF = find( f.begin(), f.end(), idEdge );
+
+						if ( itF != f.end() ){
+							f.erase( itF );
+						}
+
+					}
+
+					vectorsDij[ 1 ][ vectorDijIndex ] = estimate;
+					vectorsDij[ 2 ][ vectorDijIndex ] = idNode;
+
+
+				}
+
+				readDijkstra( idEdge, g, f, vectorsDij );
+
+			}
+
+		}
+
+	}
+
+}
 
 // Algoritmo de DIJKSTRA
 vector<vector<int>> dijkstraCalc( Graph g, int idNode ){
@@ -679,24 +750,58 @@ vector<vector<int>> dijkstraCalc( Graph g, int idNode ){
 	// [0] - vetor de vertices
 	// [1] - vetor de estimativas
 	// [2] - vetor de precedentes
-	vector<vector<int>> vetoresDij;
+	vector<vector<int>> vectorsDij;
 	// vetor para marcar vertices ja percorridos
 	vector<int> f;
+	int i;
 
-	vetoresDij.resize( 3 );
+	vectorsDij.resize( 3 );
 	// marca vetores de estimativas e precedentes com valor inicial
 	for ( i = 1 ; i < 3 ; i++ )
-		vetoresDij[ i ].assign( g.numNodes, -1 );
+		vectorsDij[ i ].assign( g.numNodes, -1 );
 
 	// popula vetor de vertices
 	for( auto node:g.nodes ){
-		vetoresDij[ 0 ].push_back( node.id );
+		vectorsDij[ 0 ].push_back( node.id );
 	}
 
 	// marca valores inciais do vertice inicial
-	vetoresDij[ 1 ][ idNode ] = 0;
-	vetoresDij[ 2 ][ idNode ] = idNode;
+	vectorsDij[ 1 ][ idNode - 1 ] = 0;
+	vectorsDij[ 2 ][ idNode - 1 ] = idNode;
 
+	readDijkstra( idNode, g, f, vectorsDij );
 
+	return vectorsDij;
+
+}
+
+// Funcao para printar vetores dijkstra
+void printDij( vector<vector<int>> matrixDij ){
+
+	unsigned int i;
+
+	cout << endl << "Vetores de DIJKSTRA:";
+	cout << endl << "Vertices   : ";
+	for( i = 0; i < matrixDij[ 0 ].size(); i++ ){
+
+		cout << matrixDij[ 0 ][ i ] << " ";
+
+	}
+
+	cout << endl << "Estimativas: ";
+	for( i = 0; i < matrixDij[ 1 ].size(); i++ ){
+
+		cout << matrixDij[ 1 ][ i ] << " ";
+
+	}
+
+	cout << endl << "Precedentes: ";
+	for( i = 0; i < matrixDij[ 2 ].size(); i++ ){
+
+		cout << matrixDij[ 2 ][ i ] << " ";
+
+	}
+
+	cout << endl;
 
 }

@@ -368,3 +368,6 @@ vector<int> graphDFS( Graph g, int startNode, vector<int>& pe, vector<int>& ps )
 vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle );
 void printWeightedGraph( Graph g );
 list<Node> readWeightedGraph( string fileName );
+vector<vector<int>> dijkstraCalc( Graph g, int idNode );
+void printDij( vector<vector<int>> matrix );
+void printDij( vector<vector<int>> matrixDij );

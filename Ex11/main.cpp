@@ -11,6 +11,9 @@ int main()
     Graph* g = NULL;
     char cDirected;
     bool bDirected;
+    int  startNode;
+    vector<vector<int>> vectorsDij;
+    list<Node> :: iterator itNode;
 
     cout << "O grafo eh direcionado? ( 'S' - Sim | 'N' - Não ): ";
     cin >> cDirected;
@@ -20,6 +23,16 @@ int main()
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
     printWGraphInfo( *g );
     cout << "------------------------------------------------------ " << endl << endl;
+    cout << "Informe o nó de inicio para o algoritmo de DIJKSTRA: ";
+    cin >> startNode;
+
+    if( !g->getNodeById( startNode, itNode ) ){
+      cout << "O vértice informado não existe no grafo!" << endl;
+      return 0;
+    }
+
+    vectorsDij = dijkstraCalc( *g, startNode );
+    printDij( vectorsDij );
 
     return 0;
 
