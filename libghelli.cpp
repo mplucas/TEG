@@ -643,7 +643,7 @@ void readBFS( Graph g, int& t, vector<int>& l, list<int>& f, vector<int>& fshow,
 
 }
 
-// Funcao para calcular os vetor L da arvore geradora DFS de um grafo.
+// Funcao para calcular os vetor L da arvore geradora BFS de um grafo.
 // Tambem retorna um vetor f com a ordem dos vertices visitados.
 vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& father, vector<int>& level, vector<int>& brother, vector<int>& cousin, vector<int>& uncle ){
 
@@ -803,5 +803,53 @@ void printDij( vector<vector<int>> matrixDij ){
 	}
 
 	cout << endl;
+
+}
+
+// Função que retorna um caminho possivel entre dois nós em um GRAFO
+list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes, list<int> path ){ // ENCAPSULAR AQUI
+
+	list<Node> :: iterator itNode;
+	list<int> testPath;
+	list<int> :: iterator itF;
+
+	if( g.getNodeById( idNodeOri, itNode ) ){
+
+		for( auto node:itNode->edges ){
+			if( node == idNodeDes ){
+				path.push_back( node );
+				return path;
+			}
+		}
+
+		for( auto node:itNode->edges ){
+			itF = find( f.begin(), f.end(), node );
+			// se nao encontrou node em path
+			if ( itF == f.end() ){
+
+				// adiciona nó no final do path e roda a recursividade, caso não
+				// encontrar caminho até destino, o retira do final do path e adiciona
+				// o próximo
+				path.push_back( node );
+				testPath = findPathBetween( g, node, idNodeDes, path );
+				if( testPath.back() == idNodeDes ){
+					return testPath;
+				}
+				// retira caso não encontrou
+				path.pop_back();
+
+			}
+		}
+
+	}
+
+	return path;
+
+}
+
+// Algoritmo de For-Fulkerson
+void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
+
+
 
 }
