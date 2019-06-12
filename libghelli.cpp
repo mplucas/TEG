@@ -864,20 +864,30 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes ){
 }
 
 
-// Algoritmo de For-Fulkerson
+// Algoritmo de Ford-Fulkerson
 void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
 
-	int       choosenEdge;
-	int       lighterWeight;
+	// chosenEdge: vetor de int:
+	//		- [0]: nó de origem
+	// 		- [1]: nó de destino
+	// 		- [2]: peso da aresta
+	list<int> choosenEdge;
 	list<int> choosenPath;
+	list<int> :: iterator itEdge;
+	list<int> :: iterator itNode;
 
+	choosenEdge.assign( 3, 99999 );
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
-	choosenEdge = 0;
+	itEdge = choosenPath.begin();
+	itNode = itEdge;
+	itEdge++;
 
-	for( auto edge:choosenPath ){
-		if( edge < choosenEdge ){
+	while( itEdge != choosenPath.end() ){
 
-		}
+		
+
+		itNode++;
+		itEdge++;
 	}
 
 }
