@@ -867,6 +867,17 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes ){
 // Algoritmo de For-Fulkerson
 void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
 
+	int       choosenEdge;
+	int       lighterWeight;
+	list<int> choosenPath;
 
+	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
+	choosenEdge = 0;
+
+	for( auto edge:choosenPath ){
+		if( edge < choosenEdge ){
+
+		}
+	}
 
 }
