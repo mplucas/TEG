@@ -369,5 +369,5 @@ vector<int> graphBFS( Graph g, int startNode, vector<int>& l, vector<int>& fathe
 void printWeightedGraph( Graph g );
 list<Node> readWeightedGraph( string fileName );
 vector<vector<int>> dijkstraCalc( Graph g, int idNode );
-void printDij( vector<vector<int>> matrix );
 void printDij( vector<vector<int>> matrixDij );
+list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes );

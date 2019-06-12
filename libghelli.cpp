@@ -806,8 +806,8 @@ void printDij( vector<vector<int>> matrixDij ){
 
 }
 
-// Função que retorna um caminho possivel entre dois nós em um GRAFO
-list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes, list<int> path ){ // ENCAPSULAR AQUI
+// Parte recursiva da findPathBetween
+list<int> findPath( Graph g, int idNodeOri, int idNodeDes, list<int> path ){
 
 	list<Node> :: iterator itNode;
 	list<int> testPath;
@@ -823,15 +823,15 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes, list<int> path
 		}
 
 		for( auto node:itNode->edges ){
-			itF = find( f.begin(), f.end(), node );
+			itF = find( path.begin(), path.end(), node );
 			// se nao encontrou node em path
-			if ( itF == f.end() ){
+			if ( itF == path.end() ){
 
 				// adiciona nó no final do path e roda a recursividade, caso não
 				// encontrar caminho até destino, o retira do final do path e adiciona
 				// o próximo
 				path.push_back( node );
-				testPath = findPathBetween( g, node, idNodeDes, path );
+				testPath = findPath( g, node, idNodeDes, path );
 				if( testPath.back() == idNodeDes ){
 					return testPath;
 				}
@@ -846,6 +846,23 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes, list<int> path
 	return path;
 
 }
+
+// Função que retorna um caminho possivel entre dois nós em um GRAFO
+list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes ){
+
+	list<int> path;
+
+	path = findPath( g, idNodeOri, idNodeDes, path );
+	path.push_front( idNodeOri );
+
+	if( path.back() != idNodeDes ){
+		path.clear();
+	}
+
+	return path;
+
+}
+
 
 // Algoritmo de For-Fulkerson
 void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
