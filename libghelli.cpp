@@ -871,23 +871,28 @@ void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
 	//		- [0]: nó de origem
 	// 		- [1]: nó de destino
 	// 		- [2]: peso da aresta
-	list<int> choosenEdge;
-	list<int> choosenPath;
-	list<int> :: iterator itEdge;
-	list<int> :: iterator itNode;
+	vector<int> choosenEdge;
+	list<int>   choosenPath;
+	list<int>   :: iterator itEdgeOri;
+	list<int>   :: iterator itEdgeDes;
+	list<Node>  :: iterator itNode;
 
 	choosenEdge.assign( 3, 99999 );
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
-	itEdge = choosenPath.begin();
-	itNode = itEdge;
-	itEdge++;
+	itEdgeOri   = choosenPath.begin();
+	itEdgeDes   = choosenPath.begin();
+	itEdgeDes++;
 
-	while( itEdge != choosenPath.end() ){
+	while( itEdgeDes != choosenPath.end() ){
 
-		
+		if( g.getNodeById( *itEdgeOri, itNode ) ){
 
-		itNode++;
-		itEdge++;
+			
+
+		}
+
+		itEdgeOri++;
+		itEdgeDes++;
 	}
 
 }
