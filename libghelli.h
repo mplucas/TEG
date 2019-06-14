@@ -370,4 +370,4 @@ void printWeightedGraph( Graph g );
 list<Node> readWeightedGraph( string fileName );
 vector<vector<int>> dijkstraCalc( Graph g, int idNode );
 void printDij( vector<vector<int>> matrixDij );
-list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes );
+int calcFordFulkerson( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutEdges );

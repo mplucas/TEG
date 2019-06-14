@@ -11,7 +11,8 @@ int main()
     Graph* g = NULL;
     int idNodeOri;
     int idNodeDes;
-    list<int> path;
+    int maxFlux;
+    list<vector<int>> cutEdges;
 
     cout << "O grafo eh considerado nao direcionado!" << endl;
     g = new Graph( readWeightedGraph( "grafo.txt" ), false );
@@ -23,15 +24,18 @@ int main()
     cin >> idNodeOri;
     cout << "Informe vertice de destino: ";
     cin >> idNodeDes;
-    path = findPathBetween( *g, idNodeOri, idNodeDes );
+    maxFlux = calcFordFulkerson( *g, idNodeOri, idNodeDes, cutEdges );
 
-    if( !path.empty() ){
-      cout << endl << "Caminho possível:" << endl;
-      for( auto n:path ){
-        cout << n << " - ";
+    if( !cutEdges.empty() ){
+      
+      cout << endl << "Arestas para corte:" << endl;
+      for( auto edge:cutEdges ){
+        cout << "- " << edge[0] << " --> " << edge[1] << ", peso: " << edge[2] << endl;
       }
+      cout << endl << "Fluxo máximo: " << maxFlux << endl;
+
     }else{
-      cout << endl << "Não há caminho!!" << endl;
+      cout << endl << "Não há arestas para serem cortadas, pois os vértices informados não são conexos!!" << endl;
     }
 
     return 0;

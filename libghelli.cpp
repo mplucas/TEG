@@ -864,8 +864,8 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes ){
 }
 
 
-// Algoritmo de Ford-Fulkerson
-void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
+// Parte recursiva do algoritmo de Ford-Fulkerson
+void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutEdges, int& maxFlux ){
 
 	// chosenEdge: vetor de int:
 	//		- [0]: nó de origem
@@ -876,23 +876,63 @@ void fordFulkerson( Graph g, int idNodeOri, int idNodeDes ){
 	list<int>   :: iterator itEdgeOri;
 	list<int>   :: iterator itEdgeDes;
 	list<Node>  :: iterator itNode;
+	list<int>   :: iterator itChoosenEdge;
+	list<int>   :: iterator itCEdgeWeight;
 
-	choosenEdge.assign( 3, 99999 );
+	// retorna caminho possivel entre os dois nós
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
-	itEdgeOri   = choosenPath.begin();
-	itEdgeDes   = choosenPath.begin();
-	itEdgeDes++;
+	
+	if( !choosenPath.empty() ){
 
-	while( itEdgeDes != choosenPath.end() ){
+		itEdgeOri   = choosenPath.begin();
+		itEdgeDes   = choosenPath.begin();
+		itEdgeDes++;
 
-		if( g.getNodeById( *itEdgeOri, itNode ) ){
+		// valor inicial da aresta escolhida
+		choosenEdge.assign( 3, 999999 ); //gambi
 
-			
+		while( itEdgeDes != choosenPath.end() ){
 
+			// se a aresta entre o itEdgeOri e itEdgeDes é valida, verifica se é menor que o atual
+			if( g.getNodeById( *itEdgeOri, itNode ) ){
+
+				itChoosenEdge = find( itNode->edges.begin(), itNode->edges.end(), *itEdgeDes );
+				itCEdgeWeight = itNode->edgeWeight.begin();
+				// avança o itCEdgeWeight para corresponder a itChoosenEdge
+				advance( itCEdgeWeight, distance( itNode->edges.begin(), itChoosenEdge ) );
+				
+				if( *itCEdgeWeight < choosenEdge[2] ){
+					choosenEdge[0] = *itEdgeOri;
+					choosenEdge[1] = *itEdgeDes;
+					choosenEdge[2] = *itCEdgeWeight;
+				}
+
+			}
+
+			itEdgeOri++;
+			itEdgeDes++;
 		}
 
-		itEdgeOri++;
-		itEdgeDes++;
+		// adiciona aresta escolhida num vetor para ser mostrado posteriormente
+		cutEdges.push_back( choosenEdge );
+		// adiciona peso da aresta a ser cortada no fluxo maximo
+		maxFlux += choosenEdge.back();
+		// corta aresta escolhida
+		choosenEdge.pop_back();
+		g.removeEdge( choosenEdge );
+		recursiveFF( g, idNodeOri, idNodeDes, cutEdges, maxFlux );
+
 	}
+
+}
+
+// Algoritmo de Ford-Fulkerson
+int calcFordFulkerson( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutEdges ){
+
+	int maxFlux = 0;
+	
+	recursiveFF( g, idNodeOri,idNodeDes, cutEdges, maxFlux );
+
+	return maxFlux;
 
 }
