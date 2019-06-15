@@ -33,6 +33,10 @@ class Node
 		edges = values;
 	}
 
+	void setEdgeWeights( list<int> values ){
+		edgeWeight = values;
+	}
+
 };
 
 class Graph
@@ -331,22 +335,126 @@ class Graph
 	// Funçao para remover uma aresta do GRAFO.
 	void removeEdge( vector<int> edge ){
 
+		int posEdge;
 		list<Node> :: iterator itNode;
 		list<int>  :: iterator itEdge;
+		list<int>  :: iterator itEdgeWeight;
 
+		// tenta apagar a aresta no caminho front->end
 		this->getNodeById( edge.front(), itNode );
-
 		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
 
 		if ( itEdge != itNode->edges.end() ){
-			itNode->edges.remove( edge.back() );
+			
+			posEdge = distance( itNode->edges.begin(), itEdge );
+			itNode->edges.erase( itEdge );
+
 		}else{
 
+			// tenta apagar a aresta no caminho end->front
 			this->getNodeById( edge.back(), itNode );
-			itNode->edges.remove( edge.front() );
+			itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.front() );
+			
+			if ( itEdge != itNode->edges.end() ){
+
+				posEdge = distance( itNode->edges.begin(), itEdge );
+				itNode->edges.erase( itEdge );
+
+			}
 
 		}
 
+		// apaga o peso da aresta caso exista
+		if( this->isWeighted() ){
+
+			itEdgeWeight = itNode->edgeWeight.begin();
+			advance( itEdgeWeight, posEdge );
+			itNode->edgeWeight.erase( itEdgeWeight );
+
+		}
+
+		buildGraph( nodes, directed );
+
+	}
+
+	// Função para adicionar uma aresta
+	// Parâmetro edgeAdd:
+	//	para grafos sem peso:
+	//		[0]: vértice de origem
+	// 		[1]: vértice de destino
+	//	para grafos com peso:
+	//		[0]: vértice de origem
+	// 		[1]: vértice de destino
+	// 		[2]: peso da aresta
+	void addEdge( vector<int> edgeAdd ){
+
+		bool edgeAdded;
+		list<int> newEdges;
+		list<int> newWeights;
+		list<Node> :: iterator itNode;
+		list<int>  :: iterator itWeight;
+
+		edgeAdded = false;
+		itNode = find( nodes.begin(), nodes.end(), edgeAdd[0] );
+
+		if( !this->isWeighted() ){
+
+			if( itNode != nodes.end() ){
+
+				for( auto edge:itNode->edges ){
+
+					// adiciona a aresta na ordem correta
+					if( ( !edgeAdded ) || ( edge > edgeAdd[1] ) ){
+					
+						newEdges.push_back( edgeAdd[1] );
+						edgeAdded = true;
+					
+					}
+
+					newEdges.push_back( edge );
+
+				}
+
+				// atualiza arestas
+				itNode->setEdges( newEdges );
+
+			}
+
+		}else{
+
+			if( itNode != nodes.end() ){
+
+				itWeight = itNode->edgeWeight.begin();
+
+				for( auto edge:itNode->edges ){
+
+					// adiciona a aresta na ordem correta
+					if( ( !edgeAdded ) || ( edge > edgeAdd[1] ) ){
+					
+						newEdges.push_back( edgeAdd[1] );
+						// adiciona peso da aresta nova
+						newWeights.push_back( edgeAdd[2] );
+						edgeAdded = true;
+					
+					}
+
+					newEdges.push_back( edge );
+
+					// adiciona peso na ordem correta
+					newWeights.push_back( *itWeight );
+					itWeight++;
+
+				}
+
+				// atualiza arestas e pesos
+				itNode->setEdges( newEdges );
+				itNode->setEdgeWeights( newWeights );
+
+			}
+
+		}
+
+		// atualiza o grafo
 		buildGraph( nodes, directed );
 
 	}

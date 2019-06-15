@@ -871,13 +871,18 @@ void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutE
 	//		- [0]: nó de origem
 	// 		- [1]: nó de destino
 	// 		- [2]: peso da aresta
+	bool retEdgeExists;
 	vector<int> choosenEdge;
+	vector<int> edgeAux;
+	vector<int> retEdge;
 	list<int>   choosenPath;
 	list<int>   :: iterator itEdgeOri;
 	list<int>   :: iterator itEdgeDes;
 	list<Node>  :: iterator itNode;
 	list<int>   :: iterator itChoosenEdge;
 	list<int>   :: iterator itCEdgeWeight;
+	list<Node>  :: iterator itRetEdgeOri;
+	list<int>  :: iterator itRetWeight;
 
 	// retorna caminho possivel entre os dois nós
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
@@ -901,6 +906,7 @@ void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutE
 				// avança o itCEdgeWeight para corresponder a itChoosenEdge
 				advance( itCEdgeWeight, distance( itNode->edges.begin(), itChoosenEdge ) );
 				
+				// escolhe a aresta de menor capacidade
 				if( *itCEdgeWeight < choosenEdge[2] ){
 					choosenEdge[0] = *itEdgeOri;
 					choosenEdge[1] = *itEdgeDes;
@@ -913,13 +919,81 @@ void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutE
 			itEdgeDes++;
 		}
 
+		// após escolher a aresta de menor capacidade, subtrai os fluxos das arestas
+		// do caminho pela capacidade da aresta escolhida, adiciona novas arestas para
+		// a rede residual e retira a aresta escolhida
+
+		// reinicia iteradores
+		itEdgeOri   = choosenPath.begin();
+		itEdgeDes   = choosenPath.begin();
+		itEdgeDes++;
+
+		while( itEdgeDes != choosenPath.end() ){
+
+			retEdgeExists = false;
+			
+			// se a aresta entre o itEdgeOri e itEdgeDes é valida, subtrai seu fluxo e adiciona
+			// aresta de retorno
+			if( g.getNodeById( *itEdgeOri, itNode ) ){
+
+				itChoosenEdge = find( itNode->edges.begin(), itNode->edges.end(), *itEdgeDes );
+				itCEdgeWeight = itNode->edgeWeight.begin();
+				// avança o itCEdgeWeight para corresponder a itChoosenEdge
+				advance( itCEdgeWeight, distance( itNode->edges.begin(), itChoosenEdge ) );
+				
+				// subtrai fluxo da aresta
+				*itCEdgeWeight -= choosenEdge.back();
+
+				// se o fluxo da aresta for zerado, a retira para não influenciar o funcionamento
+				// da função de encontrar caminhos validos
+				if ( *itCEdgeWeight <= 0 ){
+					edgeAux.push_back( *itEdgeOri );
+					edgeAux.push_back( *itEdgeDes );
+					g.removeEdge( edgeAux );
+				}
+
+				// verifica se já existe aresta de retorno
+				if( g.getNodeById( *itEdgeDes, itRetEdgeOri ) ){
+					for( auto idEdge:itRetEdgeOri->edges ){
+						if( idEdge == *itEdgeOri ){
+							retEdgeExists = true;
+							break;
+						}
+					}
+				}
+
+				// adiciona aresta de retorno com fluxo escolhido caso não exista, caso exista
+				// apenas adiciona em seu fluxo
+				if( retEdgeExists ){
+
+					itRetWeight = itRetEdgeOri->edgeWeight.begin();
+					for( auto idEdge:itRetEdgeOri->edges ){
+						if( idEdge == *itEdgeOri ){
+							break;
+						}
+						itRetWeight++;
+					}
+					*itRetWeight += choosenEdge.back();
+
+				}else{
+
+					retEdge.push_back( *itEdgeDes );
+					retEdge.push_back( *itEdgeOri );
+					retEdge.push_back( choosenEdge.back() );
+					g.addEdge( retEdge );
+
+				}
+
+			}
+
+			itEdgeOri++;
+			itEdgeDes++;
+		}
+
 		// adiciona aresta escolhida num vetor para ser mostrado posteriormente
 		cutEdges.push_back( choosenEdge );
 		// adiciona peso da aresta a ser cortada no fluxo maximo
 		maxFlux += choosenEdge.back();
-		// corta aresta escolhida
-		choosenEdge.pop_back();
-		g.removeEdge( choosenEdge );
 		recursiveFF( g, idNodeOri, idNodeDes, cutEdges, maxFlux );
 
 	}
