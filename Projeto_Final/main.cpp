@@ -18,7 +18,7 @@ int main()
     g = new Graph( readWeightedGraph( "grafo.txt" ), false );
 
     cout << "GRAFO ATUAL------------------------------------------- " << endl;
-    printGraphInfo( *g );
+    printWeightedGraph( *g );
     cout << "------------------------------------------------------ " << endl << endl;
     cout << "Informe vertice de origem: ";
     cin >> idNodeOri;

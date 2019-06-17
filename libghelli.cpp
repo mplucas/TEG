@@ -852,8 +852,8 @@ list<int> findPathBetween( Graph g, int idNodeOri, int idNodeDes ){
 
 	list<int> path;
 
-	path = findPath( g, idNodeOri, idNodeDes, path );
 	path.push_front( idNodeOri );
+	path = findPath( g, idNodeOri, idNodeDes, path );
 
 	if( path.back() != idNodeDes ){
 		path.clear();
@@ -886,7 +886,8 @@ void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutE
 
 	// retorna caminho possivel entre os dois nós
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
-	
+	cout << "caminho escolhido" << endl;
+	showList( choosenPath );
 	if( !choosenPath.empty() ){
 
 		itEdgeOri   = choosenPath.begin();

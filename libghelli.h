@@ -340,40 +340,45 @@ class Graph
 		list<int>  :: iterator itEdge;
 		list<int>  :: iterator itEdgeWeight;
 
+		posEdge = -1; //gambi
+
 		// tenta apagar a aresta no caminho front->end
-		this->getNodeById( edge.front(), itNode );
-		itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
+		if( this->getNodeById( edge.front(), itNode ) ){
 
-		if ( itEdge != itNode->edges.end() ){
-			
-			posEdge = distance( itNode->edges.begin(), itEdge );
-			itNode->edges.erase( itEdge );
+			itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.back() );
 
-		}else{
-
-			// tenta apagar a aresta no caminho end->front
-			this->getNodeById( edge.back(), itNode );
-			itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.front() );
-			
 			if ( itEdge != itNode->edges.end() ){
-
+				
 				posEdge = distance( itNode->edges.begin(), itEdge );
 				itNode->edges.erase( itEdge );
 
+			}else{
+
+				// tenta apagar a aresta no caminho end->front
+				if( this->getNodeById( edge.back(), itNode ) ){
+					itEdge = find( itNode->edges.begin(), itNode->edges.end(), edge.front() );
+					
+					if ( itEdge != itNode->edges.end() ){
+
+						posEdge = distance( itNode->edges.begin(), itEdge );
+						itNode->edges.erase( itEdge );
+
+					}
+				}
+
+			}
+			// apaga o peso da aresta caso exista
+			if( ( this->isWeighted() ) && ( posEdge > -1 ) ){
+
+				itEdgeWeight = itNode->edgeWeight.begin();
+				advance( itEdgeWeight, posEdge );
+				itNode->edgeWeight.erase( itEdgeWeight );
+
 			}
 
-		}
-
-		// apaga o peso da aresta caso exista
-		if( this->isWeighted() ){
-
-			itEdgeWeight = itNode->edgeWeight.begin();
-			advance( itEdgeWeight, posEdge );
-			itNode->edgeWeight.erase( itEdgeWeight );
+			buildGraph( nodes, directed );
 
 		}
-
-		buildGraph( nodes, directed );
 
 	}
 
@@ -395,11 +400,10 @@ class Graph
 		list<int>  :: iterator itWeight;
 
 		edgeAdded = false;
-		itNode = find( nodes.begin(), nodes.end(), edgeAdd[0] );
+		
+		if( this->getNodeById( edgeAdd[0], itNode ) ){
 
-		if( !this->isWeighted() ){
-
-			if( itNode != nodes.end() ){
+			if( !this->isWeighted() ){
 
 				for( auto edge:itNode->edges ){
 
@@ -418,11 +422,7 @@ class Graph
 				// atualiza arestas
 				itNode->setEdges( newEdges );
 
-			}
-
-		}else{
-
-			if( itNode != nodes.end() ){
+			}else{
 
 				itWeight = itNode->edgeWeight.begin();
 
@@ -452,11 +452,10 @@ class Graph
 
 			}
 
+			// atualiza o grafo
+			buildGraph( nodes, directed );
+
 		}
-
-		// atualiza o grafo
-		buildGraph( nodes, directed );
-
 	}
 
 };
