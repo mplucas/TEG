@@ -886,9 +886,10 @@ void recursiveFF( Graph g, int idNodeOri, int idNodeDes, list<vector<int>>& cutE
 
 	// retorna caminho possivel entre os dois nós
 	choosenPath = findPathBetween( g, idNodeOri, idNodeDes );
-	cout << "caminho escolhido" << endl;
-	showList( choosenPath );
 	if( !choosenPath.empty() ){
+
+		cout << endl << "Caminho aumentado:" << endl;
+		showList( choosenPath );
 
 		itEdgeOri   = choosenPath.begin();
 		itEdgeDes   = choosenPath.begin();
